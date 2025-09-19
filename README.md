@@ -1,6 +1,6 @@
 # Nebula
 
-A really bad C++ Minecraft injection client for linux/Windows (windows support later). All code (as of right now) was based on 
+A really bad C++ Minecraft injection client for linux/Windows (windows support later). Some code (as of right now) is based on 
 [Phantom](https://github.com/SomePineaple/Phantom)
 
 # Building
