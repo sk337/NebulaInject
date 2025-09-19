@@ -1,5 +1,5 @@
 //
-// Created by somepineaple on 1/25/22.
+// Created by somepineaple on 1/25/22. Some Modules added by Kirby!
 //
 
 #include "Phantom.h"
@@ -19,7 +19,7 @@
 #include "cheats/Velocity.h"
 #include "cheats/Reach.h"
 #include "cheats/ESP.h"
-#include "cheats/TestPlayerModule.h"
+#include "cheats/AutoClicker.h"
 
 #include "ui/KeyManager.h"
 
@@ -44,10 +44,10 @@ Phantom::Phantom() {
     cheats.push_back(new FastPlace());
 	cheats.push_back(new AutoSprint());
 	cheats.push_back(new NoHitDelay());
-	cheats.push_back(new Velocity(this));
-	cheats.push_back(new Reach(this));
-	cheats.push_back(new ESP(this));
-	cheats.push_back(new TestPlayerModule(this));
+	cheats.push_back(new Velocity(this)); //untested but should work
+	cheats.push_back(new Reach(this)); //untested but should work
+//	cheats.push_back(new ESP(this)); //crashes ur game
+	cheats.push_back(new AutoClicker()); //untested but should work
     
 }
 

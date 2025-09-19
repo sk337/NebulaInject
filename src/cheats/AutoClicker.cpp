@@ -1,5 +1,6 @@
 //
 // Created by somepineaple on 1/30/22.
+// Some basic stuff added by Kirby!
 //
 
 #include "AutoClicker.h"
@@ -18,7 +19,7 @@ AutoClicker::AutoClicker()
 
   clickTimer = new MSTimer();
   eventTimer = new MSTimer();
-  onlySword = false; // default: optional
+  mineBlocks = true;
   nextDelay = 0;
   eventDelay = 350;
   nextEventDelay = (int)(MathHelper::randFloat(0.8, 1.2) * (float)eventDelay);

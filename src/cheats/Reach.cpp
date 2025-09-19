@@ -1,5 +1,5 @@
 //
-// Created by Kirby! Remade Reach.cpp for smoother, more discrete hit detection
+// Created by Kirby! Remade Reach.cpp for more discrete hit detection (untested)
 //
 
 #include "Reach.h"
@@ -11,7 +11,7 @@
 #include <net/minecraft/util/Vec3.h>
 #include <net/minecraft/client/Minecraft.h>
 
-Reach::Reach(Phantom *phantom) : Cheat("Reach", "Long arm hack") {
+Reach::Reach(Phantom *phantom) : Cheat("Reach", "Tf2 Sniper") {
     this->phantom = phantom;
     reach = 3.2f;
 }

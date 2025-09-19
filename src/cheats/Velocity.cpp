@@ -1,3 +1,8 @@
+//
+//Remade by kirby for less detection. (untested)
+//
+
+
 
 #include "Velocity.h"
 #include <algorithm> // for std::clamp
@@ -6,7 +11,7 @@
 #include <net/minecraft/client/multiplayer/WorldClient.h>
 #include <net/minecraft/entity/EntityPlayerSP.h>
 Velocity::Velocity(Phantom *phantom)
-    : Cheat("Velocity", "Modifies entity velocity discreetly"),
+    : Cheat("Velocity", "Stop's knockback sometimes"),
       phantom(phantom), horizontalMotion(100), verticalMotion(100), chance(100),
       method(Method::SCALE) {}
 

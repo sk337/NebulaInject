@@ -1,5 +1,5 @@
 //
-// Created by somepineaple on 2025-09-19.
+// Created by Kirby!. (ngl ts dont work it just crashes imma wait till i know more to get it to work)
 //
 
 #include "ESP.h"
