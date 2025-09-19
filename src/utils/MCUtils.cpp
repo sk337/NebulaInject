@@ -7,6 +7,7 @@
 #include <net/minecraft/entity/EntityPlayerSP.h>
 #include "MiscUtils.h"
 
+
 bool MCUtils::sameTeam(Minecraft *mc, EntityPlayer *player) {
     std::string playerName = mc->getPlayerContainer().getFormattedDisplayName();
     std::string otherName = player->getFormattedDisplayName();
@@ -17,5 +18,6 @@ bool MCUtils::sameTeam(Minecraft *mc, EntityPlayer *player) {
     if (playerName.size() < 3 || otherName.size() < 3)
         return false;
 
-    return playerName.at(2) == otherName.at(2);
+    return playerName[2] == otherName[2];
 }
+

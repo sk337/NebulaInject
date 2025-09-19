@@ -1,0 +1,41 @@
+//
+// Created by somepineaple on 1/30/22.
+//
+
+#ifndef PHANTOM_AUTOCLICKER_H
+#define PHANTOM_AUTOCLICKER_H
+
+#include "../Phantom.h"
+#include "Cheat.h"
+#include "../utils/MSTimer.h"
+
+class AutoClicker : public Cheat {
+public:
+    explicit AutoClicker();
+    void run(Minecraft *mc) override;
+    void renderSettings() override;
+private:
+    void updateValues();
+
+    MSTimer *clickTimer;
+    MSTimer *eventTimer;
+
+bool onlySword; // Only click if holding a sword
+    float cps;
+    float holdLength;
+    float holdLengthRandom;
+    bool onlyInGame;
+    bool showAdvanced;
+
+bool mineBlocks; // Only click when aiming at blocks
+    int nextDelay;
+    int eventDelay;
+    int nextEventDelay;
+    float dropChance;
+    float spikeChance;
+    bool isSpiking;
+    bool isDropping;
+};
+
+
+#endif //PHANTOM_AUTOCLICKER_H

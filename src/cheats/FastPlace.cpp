@@ -9,12 +9,16 @@
 #include <net/minecraft/client/multiplayer/WorldClient.h>
 #include <net/minecraft/entity/EntityPlayerSP.h>
 
+FastPlace::FastPlace() : Cheat("FastPlace", "Places blocks faster than normal!") {
+    delay = 0.0f; // Initialize delay to a default value
+}
+
 void FastPlace::run(Minecraft *mc) {
 
   mc->setRightClickDelayTimer(static_cast<int>(delay));
 }
 
-void FastPlace::render() {
+void FastPlace::renderSettings() {
 
   ImGui::SliderFloat("Block Place Delay", &delay, 0, 6, "%.2f");
 }

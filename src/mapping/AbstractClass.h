@@ -137,19 +137,39 @@ protected:
     // Field getter that uses the mapping class so only a clear-text name needs to be defined.
     // "name" : Clear-text name used by 'Mapping.h' to define the field.
     // Return: JNI field wrapper
-    jfieldID getFieldID(const char *name) {
-        CM* cm = Mapping::getClass(clsKey);
-        Mem field = cm->fields.at(std::string(name));
-        return getFieldID(field.name, field.desc, field.isStatic);
+    
+jfieldID getFieldID(const char *name) {
+    CM* cm = Mapping::getClass(clsKey);
+    
+    auto it = cm->fields.find(std::string(name));
+    if (it == cm->fields.end()) {
+        // Field not found, handle gracefully
+        // Could throw, log, or return a null/invalid jfieldID
+        return nullptr;  
     }
+
+    Mem& field = it->second;
+    return getFieldID(field.name, field.desc, field.isStatic);
+}
+
     // Method getter that uses the mapping class so only a clear-text name needs to be defined.
     // "name" : Clear-text name used by 'Mapping.h' to define the method.
     // Return: JNI method wrapper
-    jmethodID getMethodID(const char * name) {
-        CM* cm = Mapping::getClass(clsKey);
-        Mem method = cm->methods.at(std::string(name));
-        return getMethodID(method.name, method.desc, method.isStatic);
+    
+jmethodID getMethodID(const char *name) {
+    CM* cm = Mapping::getClass(clsKey);
+
+    auto it = cm->methods.find(std::string(name));
+    if (it == cm->methods.end()) {
+        // Method not found, handle gracefully
+        // Could log, throw, or return nullptr
+        return nullptr;
     }
+
+    Mem& method = it->second;
+    return getMethodID(method.name, method.desc, method.isStatic);
+}
+
 private:
     // Return: JNI field wrapper
     jfieldID getFieldID(const char *name,

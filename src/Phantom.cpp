@@ -14,7 +14,12 @@
 
 
 #include "cheats/FastPlace.h"
-
+#include "cheats/NoHitDelay.h"
+#include "cheats/AutoSprint.h"
+#include "cheats/Velocity.h"
+#include "cheats/Reach.h"
+#include "cheats/ESP.h"
+#include "cheats/TestPlayerModule.h"
 
 #include "ui/KeyManager.h"
 
@@ -37,16 +42,23 @@ Phantom::Phantom() {
 
  
     cheats.push_back(new FastPlace());
+	cheats.push_back(new AutoSprint());
+	cheats.push_back(new NoHitDelay());
+	cheats.push_back(new Velocity(this));
+	cheats.push_back(new Reach(this));
+	cheats.push_back(new ESP(this));
+	cheats.push_back(new TestPlayerModule(this));
     
 }
 
 void Phantom::runClient() {
+
     running = true;
 
     // Get minecraft instance
     auto *mc = new Minecraft(this);
 
-    auto *window = new PhantomWindow(700, 500, "Phantom");
+    auto *window = new NebulaWindow(700, 500, "Phantom");
     window->setup();
 
     auto *keyManager = new KeyManager();

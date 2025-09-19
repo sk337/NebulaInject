@@ -3,7 +3,9 @@
 //
 
 #include "Entity.h"
-
+#include <net/minecraft/client/Minecraft.h>
+#include <net/minecraft/entity/EntityPlayerSP.h>
+#include <net/minecraft/client/multiplayer/WorldClient.h>
 Entity::Entity(Phantom *phantom, jobject entity) : AbstractClass::AbstractClass(phantom, "Entity") {
 	this->entity = entity;
 
@@ -34,6 +36,24 @@ jdouble Entity::getPosX() {
 	return getDouble(entity, fdPosX);
 }
 
+
+bool Entity::isPlayer() {
+    jstring jname = (jstring)getObject(entity, mdGetName);
+    jboolean isCopy;
+    const char* cname = phantom->getEnv()->GetStringUTFChars(jname, &isCopy);
+
+    std::string nameStr(cname);
+    phantom->getEnv()->ReleaseStringUTFChars(jname, cname);
+
+    return nameStr.find("Player") != std::string::npos;
+}
+
+
+bool Entity::isLocalPlayer(Minecraft* mc) {
+    // Compare IDs
+    jint localId = EntityPlayerSP(phantom, mc).getId();
+    return getId() == localId;
+}
 jdouble Entity::getPosY() {
 	return getDouble(entity, fdPosY);
 }

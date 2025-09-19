@@ -50,6 +50,11 @@ private:
     jfieldID fdObjectMouseOver;
     jfieldID fdPointedEntity;
     jfieldID fdTimer;
+ jobject reflectiveObjectMouseOverField; // java.lang.reflect.Field global ref, or nullptr
+    bool useReflectionForObjectMouseOver;
+
+    // helper to find the field at runtime via reflection
+    void findObjectMouseOverFieldViaReflection(JNIEnv *env, jclass mcClass);
     jfieldID fdEntityRenderer;
     jfieldID fdRightClickDelayTimer;
     jfieldID fdLeftClickMouse;

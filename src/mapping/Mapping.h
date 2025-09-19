@@ -4,7 +4,8 @@
 
 #ifndef PHANTOM_MAPPING_H
 #define PHANTOM_MAPPING_H
-
+#include <mutex>
+#include <memory>
 #include <map>
 #include <string>
 #include "CM.h"
@@ -12,7 +13,7 @@
 #include <iostream>
 
 // Map of class names to mapping structures
-extern std::map<std::string, CM*> lookup;
+extern std::map<std::string, std::shared_ptr<CM>> lookup;
 
 class Mapping {
 public:

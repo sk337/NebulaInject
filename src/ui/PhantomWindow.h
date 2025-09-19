@@ -1,21 +1,22 @@
 //
 // Created by somepineaple on 1/30/22.
+// Updated for Nebula theme
 //
 
-#ifndef PHANTOM_PHANTOMWINDOW_H
-#define PHANTOM_PHANTOMWINDOW_H
+#ifndef NEBULA_NEBULAWINDOW_H
+#define NEBULA_NEBULAWINDOW_H
 
 #include <vector>
 #include <SDL.h>
 #include "../cheats/Cheat.h"
-#include "KeyManager.h"
 
-class PhantomWindow {
+class NebulaWindow {
 public:
-    PhantomWindow(int width, int height, const char *title);
+    NebulaWindow(int width, int height, const char *title);
     void setup();
     void destruct();
     void update(const std::vector<Cheat*>& cheats, bool &running, bool inGame);
+
 private:
     int width, height;
     const char *title;
@@ -25,5 +26,4 @@ private:
     SDL_GLContext glContext;
 };
 
-
-#endif //PHANTOM_PHANTOMWINDOW_H
+#endif //NEBULA_NEBULAWINDOW_H
