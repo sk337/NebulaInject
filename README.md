@@ -12,3 +12,8 @@ You should be able to just run ./build.sh if not just use phantom's intruction's
 Java 8
 CMake
 Minecraft (obv)
+
+
+# Usage
+
+As of rn you can just use [Phantom's injector](https://github.com/SomePineaple/Phantom-Injector/). Although I am working on my own more "Modern" looking injector
