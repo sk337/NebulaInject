@@ -20,6 +20,7 @@ echo "Configuring..."
 cmake -DJAVA_HOME="$JAVA_HOME" \
       -DCMAKE_BUILD_TYPE=Debug \
       -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+      -G Ninja \
       .. || { echo "CMake configuration failed!"; exit 1; }
 
 # Build using cmake --build (works with any generator)

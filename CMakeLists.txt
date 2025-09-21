@@ -47,7 +47,7 @@ set(IMGUI_SOURCE_FILES
 )
 
 # --- Define target FIRST ---
-add_library(phantom SHARED ${IMGUI_SOURCE_FILES} ${PHANTOM_SOURCE_FILES})
+add_library(phantom SHARED ${PHANTOM_SOURCE_FILES} ${IMGUI_SOURCE_FILES})
 
 # --- Then link against its deps ---
 target_link_libraries(phantom
@@ -55,9 +55,15 @@ target_link_libraries(phantom
     ${JVM_LIBRARY}
     ${JAWT_LIBRARY}
     ${CMAKE_THREAD_LIBS_INIT}
-    ${SDL2_LIBRARIES}
     ${CMAKE_DL_LIBS}
-    ${OPENGL_gl_LIBRARY}
-    OpenGL::GL
     ${X11_LIBRARIES}
+)
+
+add_executable(injector-cli
+    injector-cli/main.cpp
+    injector-cli/injector/elf.c
+    injector-cli/injector/injector.c
+    injector-cli/injector/ptrace.c
+    injector-cli/injector/remote_call.c
+    injector-cli/injector/util.c
 )
