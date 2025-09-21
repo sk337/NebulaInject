@@ -17,3 +17,7 @@ Minecraft (obv)
 # Usage
 
 As of rn you can just use [Phantom's injector](https://github.com/SomePineaple/Phantom-Injector/). Although I am working on my own more "Modern" looking injector
+
+# Wayland/Hyprland users
+
+Don't be an idiot like me and spend an hour debuging ur mouse, install xwayland just make sure ur mouse is set as ur xwayland pointer.
