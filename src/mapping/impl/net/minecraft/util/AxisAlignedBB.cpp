@@ -1,8 +1,5 @@
-//
-// Created by somepineaple on 2/5/22.
-//
-
 #include "AxisAlignedBB.h"
+#include <net/minecraft/util/MovingObjectPosition.h>
 
 AxisAlignedBB::AxisAlignedBB(Phantom *phantom, jobject aabb) : AbstractClass(phantom, "AxisAlignedBB") {
     mdExpand = getMethodID("expand");
@@ -21,55 +18,65 @@ AxisAlignedBB::AxisAlignedBB(Phantom *phantom, jobject aabb) : AbstractClass(pha
 }
 
 jobject AxisAlignedBB::expand(jdouble x, jdouble y, jdouble z) {
+    if (!aabb) return nullptr;
     return getObject(aabb, mdExpand, x, y, z);
 }
 
 jobject AxisAlignedBB::addCoord(jdouble x, jdouble y, jdouble z) {
+    if (!aabb) return nullptr;
     return getObject(aabb, mdAddCoord, x, y, z);
 }
 
 jobject AxisAlignedBB::calculateIntercept(jobject vec1, jobject vec2) {
+    if (!aabb) return nullptr;
     return getObject(aabb, mdCalculateIntercept, vec1, vec2);
 }
 
 jboolean AxisAlignedBB::isVecInside(jobject vec) {
+    if (!aabb || !vec) return false;
     return getBoolean(aabb, mdIsVecInside, vec);
 }
 
 jdouble AxisAlignedBB::getMaxX() {
-    return getFloat(aabb, fdMaxX);
+    if (!aabb) return 0.0;
+    return getDouble(aabb, fdMaxX);
 }
 
 jdouble AxisAlignedBB::getMaxY() {
-    return getFloat(aabb, fdMaxY);
+    if (!aabb) return 0.0;
+    return getDouble(aabb, fdMaxY);
 }
 
 jdouble AxisAlignedBB::getMaxZ() {
-    return getFloat(aabb, fdMaxZ);
+    if (!aabb) return 0.0;
+    return getDouble(aabb, fdMaxZ);
 }
 
 jdouble AxisAlignedBB::getMinX() {
-    return getFloat(aabb, fdMinX);
+    if (!aabb) return 0.0;
+    return getDouble(aabb, fdMinX);
 }
 
 jdouble AxisAlignedBB::getMinY() {
-    return getFloat(aabb, fdMinY);
+    if (!aabb) return 0.0;
+    return getDouble(aabb, fdMinY);
 }
 
 jdouble AxisAlignedBB::getMinZ() {
-    return getFloat(aabb, fdMinZ);
+    if (!aabb) return 0.0;
+    return getDouble(aabb, fdMinZ);
 }
 
 AxisAlignedBB AxisAlignedBB::getExpandContainer(jdouble x, jdouble y, jdouble z) {
-    return {phantom, expand(x, y, z)};
+    return AxisAlignedBB(phantom, expand(x, y, z));
 }
 
 AxisAlignedBB AxisAlignedBB::getAddCoordContainer(jdouble x, jdouble y, jdouble z) {
-    return {phantom, addCoord(x, y, z)};
+    return AxisAlignedBB(phantom, addCoord(x, y, z));
 }
 
 MovingObjectPosition AxisAlignedBB::getCalculateInterceptContainer(jobject vec1, jobject vec2) {
-    return {phantom, calculateIntercept(vec1, vec2)};
+    return MovingObjectPosition(phantom, calculateIntercept(vec1, vec2));
 }
 
 jobject AxisAlignedBB::getAABB() {

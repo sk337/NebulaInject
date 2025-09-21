@@ -1,36 +1,40 @@
 #include "MovingObjectPosition.h"
 
-MovingObjectPosition::MovingObjectPosition(Phantom *phantom, jobject movingObjectPosition)
+MovingObjectPosition::MovingObjectPosition(Phantom *phantom, jobject mop)
     : AbstractClass(phantom, "MovingObjectPosition") {
+    // mapping earlier defined field "hitVec"
     fdHitVec = getFieldID("hitVec");
-    fdTypeOfHit = getFieldID("typeOfHit"); // maps to the enum field
-    this->movingObjectPosition = movingObjectPosition;
+    this->obj = mop;
 }
 
-jobject MovingObjectPosition::getHitVec() {
-    return getObject(movingObjectPosition, fdHitVec);
+
+jobject MovingObjectPosition::getRawObject() const {
+    return obj;
 }
 
-Vec3 MovingObjectPosition::getHitVecContainer() {
-    return Vec3(phantom, getHitVec());
+Vec3 MovingObjectPosition::getHitVecContainer() const {
+    if (!obj) return Vec3(phantom, nullptr);
+    jobject v = getObject(obj, fdHitVec); // now unambiguous because no zero-arg getObject in this class
+    return Vec3(phantom, v);
+}
+
+
+bool MovingObjectPosition::isNull() const {
+    return obj == nullptr;
+}
+bool MovingObjectPosition::isBlock() const {
+    if (!obj) return false;
+    jclass cls = phantom->getEnv()->GetObjectClass(obj);
+    jfieldID typeField = phantom->getEnv()->GetFieldID(cls, "typeOfHit", "Lnet/minecraft/util/MovingObjectPosition$MovingObjectType;");
+    jobject typeObj = phantom->getEnv()->GetObjectField(obj, typeField);
+    
+    jclass typeCls = phantom->getEnv()->GetObjectClass(typeObj);
+    jfieldID blockEnum = phantom->getEnv()->GetStaticFieldID(typeCls, "BLOCK", "Lnet/minecraft/util/MovingObjectPosition$MovingObjectType;");
+    jobject blockVal = phantom->getEnv()->GetStaticObjectField(typeCls, blockEnum);
+
+    return phantom->getEnv()->IsSameObject(typeObj, blockVal);
 }
 
 jobject MovingObjectPosition::getMovingObjectPosition() {
     return movingObjectPosition;
-}
-
-jint MovingObjectPosition::getTypeOfHit() {
-    return getInt(movingObjectPosition, fdTypeOfHit);
-}
-
-bool MovingObjectPosition::isBlock() {
-    return getTypeOfHit() == 1; // In MCP: BLOCK = 1
-}
-
-bool MovingObjectPosition::isEntity() {
-    return getTypeOfHit() == 2; // ENTITY = 2
-}
-
-bool MovingObjectPosition::isMiss() {
-    return getTypeOfHit() == 0; // MISS = 0
 }

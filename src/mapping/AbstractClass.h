@@ -1,4 +1,3 @@
-//
 // This code was copied from UDP-CPP: https://github.com/UnknownDetectionParty/UDP-CPP
 //
 
@@ -22,87 +21,88 @@ public:
     jclass getClass();
 
     //Boolean
-    template <class T> jboolean getBoolean(jobject parent, jmethodID method, T values...) { return phantom->getEnv()->CallBooleanMethod(parent, method, values); }
-    template <class T> jboolean getBoolean(jmethodID method, T values...) { return phantom->getEnv()->CallStaticBooleanMethod(cls, method, values); }
-    jboolean getBoolean(jobject parent, jmethodID method) { return phantom->getEnv()->CallBooleanMethod(parent, method); }
-    jboolean getBoolean(jmethodID method) { return phantom->getEnv()->CallStaticBooleanMethod(cls, method); }
-    jboolean getBoolean(jobject parent, jfieldID field) { return phantom->getEnv()->GetBooleanField(parent, field); }
-    jboolean getBoolean(jfieldID field) { return phantom->getEnv()->GetStaticBooleanField(cls, field); }
+    template <class T> jboolean getBoolean(jobject parent, jmethodID method, T values...) const { return phantom->getEnv()->CallBooleanMethod(parent, method, values); }
+    template <class T> jboolean getBoolean(jmethodID method, T values...) const { return phantom->getEnv()->CallStaticBooleanMethod(cls, method, values); }
+    jboolean getBoolean(jobject parent, jmethodID method) const { return phantom->getEnv()->CallBooleanMethod(parent, method); }
+    jboolean getBoolean(jmethodID method) const { return phantom->getEnv()->CallStaticBooleanMethod(cls, method); }
+    jboolean getBoolean(jobject parent, jfieldID field) const { return phantom->getEnv()->GetBooleanField(parent, field); }
+    jboolean getBoolean(jfieldID field) const { return phantom->getEnv()->GetStaticBooleanField(cls, field); }
 
     //Byte
-    template <class T> jbyte getByte(jobject parent, jmethodID method, T values...) { return phantom->getEnv()->CallByteMethod(parent, method, values); }
-    template <class T> jbyte getByte(jmethodID method, T values...) { return phantom->getEnv()->CallStaticByteMethod(cls, method, values); }
-    jbyte getByte(jobject parent, jmethodID method) { return phantom->getEnv()->CallByteMethod(parent, method); }
-    jbyte getByte(jmethodID method) { return phantom->getEnv()->CallStaticByteMethod(cls, method); }
-    jbyte getByte(jobject parent, jfieldID field) { return phantom->getEnv()->GetByteField(parent, field); }
-    jbyte getByte(jfieldID field) { return phantom->getEnv()->GetStaticByteField(cls, field); }
+    template <class T> jbyte getByte(jobject parent, jmethodID method, T values...) const { return phantom->getEnv()->CallByteMethod(parent, method, values); }
+    template <class T> jbyte getByte(jmethodID method, T values...) const { return phantom->getEnv()->CallStaticByteMethod(cls, method, values); }
+    jbyte getByte(jobject parent, jmethodID method) const { return phantom->getEnv()->CallByteMethod(parent, method); }
+    jbyte getByte(jmethodID method) const { return phantom->getEnv()->CallStaticByteMethod(cls, method); }
+    jbyte getByte(jobject parent, jfieldID field) const { return phantom->getEnv()->GetByteField(parent, field); }
+    jbyte getByte(jfieldID field) const { return phantom->getEnv()->GetStaticByteField(cls, field); }
 
     //Char
-    template <class T> jchar getChar(jobject parent, jmethodID method, T values...) { return phantom->getEnv()->CallCharMethod(parent, method, values); }
-    template <class T> jchar getChar(jmethodID method, T values...) { return phantom->getEnv()->CallStaticCharMethod(cls, method, values); }
-    jchar getChar(jobject parent, jmethodID method) { return phantom->getEnv()->CallCharMethod(parent, method); }
-    jchar getChar(jmethodID method) { return phantom->getEnv()->CallStaticCharMethod(cls, method); }
-    jchar getChar(jobject parent, jfieldID field) { return phantom->getEnv()->GetCharField(parent, field); }
-    jchar getChar(jfieldID field) { return phantom->getEnv()->GetStaticCharField(cls, field); }
+    template <class T> jchar getChar(jobject parent, jmethodID method, T values...) const { return phantom->getEnv()->CallCharMethod(parent, method, values); }
+    template <class T> jchar getChar(jmethodID method, T values...) const { return phantom->getEnv()->CallStaticCharMethod(cls, method, values); }
+    jchar getChar(jobject parent, jmethodID method) const { return phantom->getEnv()->CallCharMethod(parent, method); }
+    jchar getChar(jmethodID method) const { return phantom->getEnv()->CallStaticCharMethod(cls, method); }
+    jchar getChar(jobject parent, jfieldID field) const { return phantom->getEnv()->GetCharField(parent, field); }
+    jchar getChar(jfieldID field) const { return phantom->getEnv()->GetStaticCharField(cls, field); }
 
     //Short
-    template <class T> jshort getShort(jobject parent, jmethodID method, T values...) { return phantom->getEnv()->CallShortMethod(parent, method, values); }
-    template <class T> jshort getShort(jmethodID method, T values...) { return phantom->getEnv()->CallStaticShortMethod(cls, method, values); }
-    jshort getShort(jobject parent, jmethodID method) { return phantom->getEnv()->CallShortMethod(parent, method); }
-    jshort getShort(jmethodID method) { return phantom->getEnv()->CallStaticShortMethod(cls, method); }
-    jshort getShort(jobject parent, jfieldID field) { return phantom->getEnv()->GetShortField(parent, field); }
-    jshort getShort(jfieldID field) { return phantom->getEnv()->GetStaticShortField(cls, field); }
+    template <class T> jshort getShort(jobject parent, jmethodID method, T values...) const { return phantom->getEnv()->CallShortMethod(parent, method, values); }
+    template <class T> jshort getShort(jmethodID method, T values...) const { return phantom->getEnv()->CallStaticShortMethod(cls, method, values); }
+    jshort getShort(jobject parent, jmethodID method) const { return phantom->getEnv()->CallShortMethod(parent, method); }
+    jshort getShort(jmethodID method) const { return phantom->getEnv()->CallStaticShortMethod(cls, method); }
+    jshort getShort(jobject parent, jfieldID field) const { return phantom->getEnv()->GetShortField(parent, field); }
+    jshort getShort(jfieldID field) const { return phantom->getEnv()->GetStaticShortField(cls, field); }
 
     //Int
-    template <class T> jint getInt(jobject parent, jmethodID method, T values...) { return phantom->getEnv()->CallIntMethod(parent, method, values); }
-    template <class T> jint getInt(jmethodID method, T values...) { return phantom->getEnv()->CallStaticIntMethod(cls, method, values); }
-    jint getInt(jobject parent, jmethodID method) { return phantom->getEnv()->CallIntMethod(parent, method); }
-    jint getInt(jmethodID method) { return phantom->getEnv()->CallStaticIntMethod(cls, method); }
-    jint getInt(jobject parent, jfieldID field) { return phantom->getEnv()->GetIntField(parent, field); }
-    jint getInt(jfieldID field) { return phantom->getEnv()->GetStaticIntField(cls, field); }
+    template <class T> jint getInt(jobject parent, jmethodID method, T values...) const { return phantom->getEnv()->CallIntMethod(parent, method, values); }
+    template <class T> jint getInt(jmethodID method, T values...) const { return phantom->getEnv()->CallStaticIntMethod(cls, method, values); }
+    jint getInt(jobject parent, jmethodID method) const { return phantom->getEnv()->CallIntMethod(parent, method); }
+    jint getInt(jmethodID method) const { return phantom->getEnv()->CallStaticIntMethod(cls, method); }
+    jint getInt(jobject parent, jfieldID field) const { return phantom->getEnv()->GetIntField(parent, field); }
+    jint getInt(jfieldID field) const { return phantom->getEnv()->GetStaticIntField(cls, field); }
 
     //Long
-    template <class T> jlong getLong(jobject parent, jmethodID method, T values...) { return phantom->getEnv()->CallLongMethod(parent, method, values); }
-    template <class T> jlong getLong(jmethodID method, T values...) { return phantom->getEnv()->CallStaticLongMethod(cls, method, values); }
-    jlong getLong(jobject parent, jmethodID method) { return phantom->getEnv()->CallLongMethod(parent, method); }
-    jlong getLong(jmethodID method) { return phantom->getEnv()->CallStaticLongMethod(cls, method); }
-    jlong getLong(jobject parent, jfieldID field) { return phantom->getEnv()->GetLongField(parent, field); }
-    jlong getLong(jfieldID field) { return phantom->getEnv()->GetStaticLongField(cls, field); }
+    template <class T> jlong getLong(jobject parent, jmethodID method, T values...) const { return phantom->getEnv()->CallLongMethod(parent, method, values); }
+    template <class T> jlong getLong(jmethodID method, T values...) const { return phantom->getEnv()->CallStaticLongMethod(cls, method, values); }
+    jlong getLong(jobject parent, jmethodID method) const { return phantom->getEnv()->CallLongMethod(parent, method); }
+    jlong getLong(jmethodID method) const { return phantom->getEnv()->CallStaticLongMethod(cls, method); }
+    jlong getLong(jobject parent, jfieldID field) const { return phantom->getEnv()->GetLongField(parent, field); }
+    jlong getLong(jfieldID field) const { return phantom->getEnv()->GetStaticLongField(cls, field); }
 
     //Float
-    template <class T> jfloat getFloat(jobject parent, jmethodID method, T values...) { return phantom->getEnv()->CallFloatMethod(parent, method, values); }
-    template <class T> jfloat getFloat(jmethodID method, T values...) { return phantom->getEnv()->CallStaticFloatMethod(cls, method, values); }
-    jfloat getFloat(jobject parent, jmethodID method) { return phantom->getEnv()->CallFloatMethod(parent, method); }
-    jfloat getFloat(jmethodID method) { return phantom->getEnv()->CallStaticFloatMethod(cls, method); }
-    jfloat getFloat(jobject parent, jfieldID field) { return phantom->getEnv()->GetFloatField(parent, field); }
-    jfloat getFloat(jfieldID field) { return phantom->getEnv()->GetStaticFloatField(cls, field); }
+    template <class T> jfloat getFloat(jobject parent, jmethodID method, T values...) const { return phantom->getEnv()->CallFloatMethod(parent, method, values); }
+    template <class T> jfloat getFloat(jmethodID method, T values...) const { return phantom->getEnv()->CallStaticFloatMethod(cls, method, values); }
+    jfloat getFloat(jobject parent, jmethodID method) const { return phantom->getEnv()->CallFloatMethod(parent, method); }
+    jfloat getFloat(jmethodID method) const { return phantom->getEnv()->CallStaticFloatMethod(cls, method); }
+    jfloat getFloat(jobject parent, jfieldID field) const { return phantom->getEnv()->GetFloatField(parent, field); }
+    jfloat getFloat(jfieldID field) const { return phantom->getEnv()->GetStaticFloatField(cls, field); }
 
     //Double
-    template <class T> jdouble getDouble(jobject parent, jmethodID method, T values...) { return phantom->getEnv()->CallDoubleMethod(parent, method, values); }
-    template <class T> jdouble getDouble(jmethodID method, T values...) { return phantom->getEnv()->CallStaticDoubleMethod(cls, method, values); }
-    jdouble getDouble(jobject parent, jmethodID method) { return phantom->getEnv()->CallDoubleMethod(parent, method); }
-    jdouble getDouble(jmethodID method) { return phantom->getEnv()->CallStaticDoubleMethod(cls, method); }
-    jdouble getDouble(jobject parent, jfieldID field) { return phantom->getEnv()->GetDoubleField(parent, field); }
-    jdouble getDouble(jfieldID field) { return phantom->getEnv()->GetStaticDoubleField(cls, field); }
+    template <class T> jdouble getDouble(jobject parent, jmethodID method, T values...) const { return phantom->getEnv()->CallDoubleMethod(parent, method, values); }
+    template <class T> jdouble getDouble(jmethodID method, T values...) const { return phantom->getEnv()->CallStaticDoubleMethod(cls, method, values); }
+    jdouble getDouble(jobject parent, jmethodID method) const { return phantom->getEnv()->CallDoubleMethod(parent, method); }
+    jdouble getDouble(jmethodID method) const { return phantom->getEnv()->CallStaticDoubleMethod(cls, method); }
+    jdouble getDouble(jobject parent, jfieldID field) const { return phantom->getEnv()->GetDoubleField(parent, field); }
+    jdouble getDouble(jfieldID field) const { return phantom->getEnv()->GetStaticDoubleField(cls, field); }
 
     //Object
-    template <class T> jobject getObject(jobject parent, jmethodID method, T values...) { return phantom->getEnv()->CallObjectMethod(parent, method, values); }
-    template <class T> jobject getObject(jmethodID method, T values...) { return phantom->getEnv()->CallStaticObjectMethod(cls, method, values); }
-    jobject getObject(jobject parent, jmethodID method) { return phantom->getEnv()->CallObjectMethod(parent, method); }
-    jobject getObject(jmethodID method) { return phantom->getEnv()->CallStaticObjectMethod(cls, method); }
-    jobject getObject(jobject parent, jfieldID field) { return phantom->getEnv()->GetObjectField(parent, field); }
-    jobject getObject(jfieldID field) { return phantom->getEnv()->GetStaticObjectField(cls, field); }
+    template <class T> jobject getObject(jobject parent, jmethodID method, T values...) const { return phantom->getEnv()->CallObjectMethod(parent, method, values); }
+    template <class T> jobject getObject(jmethodID method, T values...) const { return phantom->getEnv()->CallStaticObjectMethod(cls, method, values); }
+    jobject getObject(jobject parent, jmethodID method) const { return phantom->getEnv()->CallObjectMethod(parent, method); }
+    jobject getObject(jmethodID method) const { return phantom->getEnv()->CallStaticObjectMethod(cls, method); }
+    jobject getObject(jobject parent, jfieldID field) const { return phantom->getEnv()->GetObjectField(parent, field); }
+    jobject getObject(jfieldID field) const { return phantom->getEnv()->GetStaticObjectField(cls, field); }
 
     //Array
-    int getArrayLength(jobjectArray arr) { return phantom->getEnv()->GetArrayLength(arr); }
-    jobject getArrayElement(jobjectArray arr, jsize index) { return phantom->getEnv()->GetObjectArrayElement(arr, index); }
+    int getArrayLength(jobjectArray arr) const { return phantom->getEnv()->GetArrayLength(arr); }
+    jobject getArrayElement(jobjectArray arr, jsize index) const { return phantom->getEnv()->GetObjectArrayElement(arr, index); }
 
-    //Void
-    template <class T> void callMethod(jobject parent, jmethodID method, T values...) { return phantom->getEnv()->CallVoidMethod(parent, method, values); }
-    template <class T> void callMethod(jmethodID method, T values...) { return phantom->getEnv()->CallStaticVoidMethod(cls, method, values); }
-    void callMethod(jobject parent, jmethodID method) { return phantom->getEnv()->CallVoidMethod(parent, method); }
-    void callMethod(jmethodID method) { return phantom->getEnv()->CallStaticVoidMethod(cls, method); }
+    //Void (call methods that return void)
+    template <class T> void callMethod(jobject parent, jmethodID method, T values...) const { phantom->getEnv()->CallVoidMethod(parent, method, values); }
+    template <class T> void callMethod(jmethodID method, T values...) const { phantom->getEnv()->CallStaticVoidMethod(cls, method, values); }
+    void callMethod(jobject parent, jmethodID method) const { phantom->getEnv()->CallVoidMethod(parent, method); }
+    void callMethod(jmethodID method) const { phantom->getEnv()->CallStaticVoidMethod(cls, method); }
 
+    // Setters (mutating Java fields) — keep these non-const since they conceptually mutate state
     void setBoolean(jobject parent, jfieldID field, jboolean value) { phantom->getEnv()->SetBooleanField(parent, field, value); }
     void setBoolean(jfieldID field, jboolean value) { phantom->getEnv()->SetStaticBooleanField(cls, field, value); }
 
@@ -134,51 +134,52 @@ protected:
     const char* clsKey;
     jclass cls;
     Phantom *phantom;
+
     // Field getter that uses the mapping class so only a clear-text name needs to be defined.
     // "name" : Clear-text name used by 'Mapping.h' to define the field.
     // Return: JNI field wrapper
-    
-jfieldID getFieldID(const char *name) {
-    CM* cm = Mapping::getClass(clsKey);
-    
-    auto it = cm->fields.find(std::string(name));
-    if (it == cm->fields.end()) {
-        // Field not found, handle gracefully
-        // Could throw, log, or return a null/invalid jfieldID
-        return nullptr;  
-    }
 
-    Mem& field = it->second;
-    return getFieldID(field.name, field.desc, field.isStatic);
-}
+    jfieldID getFieldID(const char *name) const {
+        CM* cm = Mapping::getClass(clsKey);
+
+        auto it = cm->fields.find(std::string(name));
+        if (it == cm->fields.end()) {
+            // Field not found, handle gracefully
+            // Could throw, log, or return a null/invalid jfieldID
+            return nullptr;
+        }
+
+        Mem& field = it->second;
+        return getFieldID(field.name, field.desc, field.isStatic);
+    }
 
     // Method getter that uses the mapping class so only a clear-text name needs to be defined.
     // "name" : Clear-text name used by 'Mapping.h' to define the method.
     // Return: JNI method wrapper
-    
-jmethodID getMethodID(const char *name) {
-    CM* cm = Mapping::getClass(clsKey);
 
-    auto it = cm->methods.find(std::string(name));
-    if (it == cm->methods.end()) {
-        // Method not found, handle gracefully
-        // Could log, throw, or return nullptr
-        return nullptr;
+    jmethodID getMethodID(const char *name) const {
+        CM* cm = Mapping::getClass(clsKey);
+
+        auto it = cm->methods.find(std::string(name));
+        if (it == cm->methods.end()) {
+            // Method not found, handle gracefully
+            // Could log, throw, or return nullptr
+            return nullptr;
+        }
+
+        Mem& method = it->second;
+        return getMethodID(method.name, method.desc, method.isStatic);
     }
-
-    Mem& method = it->second;
-    return getMethodID(method.name, method.desc, method.isStatic);
-}
 
 private:
     // Return: JNI field wrapper
     jfieldID getFieldID(const char *name,
-                        const char *sig, bool _static) {
+                        const char *sig, bool _static) const {
         return _static ? phantom->getEnv()->GetStaticFieldID(cls, name, sig) : phantom->getEnv()->GetFieldID(cls, name, sig);
     }
     // Return: JNI method wrapper
     jmethodID getMethodID(const char *name,
-                          const char *sig, bool _static) {
+                          const char *sig, bool _static) const {
         return _static ? phantom->getEnv()->GetStaticMethodID(cls, name, sig) : phantom->getEnv()->GetMethodID(cls, name, sig);
     }
 };

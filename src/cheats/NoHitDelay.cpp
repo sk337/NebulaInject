@@ -13,7 +13,7 @@
 #include <net/minecraft/client/multiplayer/WorldClient.h>
 #include <net/minecraft/entity/EntityPlayerSP.h>
 
-NoHitDelay::NoHitDelay() : Cheat("FastPlace", "Gets Rid Of The Delay Between Hits") {
+NoHitDelay::NoHitDelay() : Cheat("NoHitDelay", "Gets Rid Of The Delay Between Hits") {
 
 }
 

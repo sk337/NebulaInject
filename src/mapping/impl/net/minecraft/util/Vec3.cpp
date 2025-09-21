@@ -2,34 +2,43 @@
 // Created by somepineaple on 2/5/22.
 //
 
-#ifndef PHANTOM_VEC3_H
-#define PHANTOM_VEC3_H
+#include "Vec3.h"
 
-#include "../../../../AbstractClass.h"
+Vec3::Vec3(Phantom *phantom, jobject vec3) : AbstractClass(phantom, "Vec3") {
+    fdXCoord = getFieldID("xCoord");
+    fdYCoord = getFieldID("yCoord");
+    fdZCoord = getFieldID("zCoord");
 
-class Vec3 : public AbstractClass {
-public:
-    Vec3(Phantom* phantom, jobject vec3);
+    mdAddVector = getMethodID("addVector");
+    mdDistanceTo = getMethodID("distanceTo");
 
-    jobject getVec3() const;
+    this->vec3 = vec3;
+}
 
-    jdouble getXCoord() const;
-    jdouble getYCoord() const;
-    jdouble getZCoord() const;
+jobject Vec3::getVec3() const {
+    return vec3;
+}
 
-    jdouble distanceTo(jobject vec) const;
+jdouble Vec3::getXCoord() const {
+    return getDouble(vec3, fdXCoord);
+}
 
-    jobject addVector(jdouble x, jdouble y, jdouble z) const;
-    Vec3 addVectorContainer(jdouble x, jdouble y, jdouble z) const;
+jdouble Vec3::getYCoord() const {
+    return getDouble(vec3, fdYCoord);
+}
 
-private:
-    jfieldID fdXCoord;
-    jfieldID fdYCoord;
-    jfieldID fdZCoord;
-    jmethodID mdAddVector;
-    jmethodID mdDistanceTo;
+jdouble Vec3::getZCoord() const {
+    return getDouble(vec3, fdZCoord);
+}
 
-    jobject vec3;
-};
+jdouble Vec3::distanceTo(jobject vec) const {
+    return getDouble(vec3, mdDistanceTo, vec);
+}
 
-#endif //PHANTOM_VEC3_H
+jobject Vec3::addVector(jdouble x, jdouble y, jdouble z) const {
+    return getObject(vec3, mdAddVector, x, y, z);
+}
+
+Vec3 Vec3::addVectorContainer(jdouble x, jdouble y, jdouble z) const {
+    return Vec3(phantom, addVector(x, y, z));
+}

@@ -1,10 +1,5 @@
-//
-// Created by somepineaple on 2/5/22.
-//
-
 #ifndef PHANTOM_AXISALIGNEDBB_H
 #define PHANTOM_AXISALIGNEDBB_H
-
 
 #include "../../../../AbstractClass.h"
 #include <net/minecraft/util/MovingObjectPosition.h>
@@ -29,6 +24,7 @@ public:
     MovingObjectPosition getCalculateInterceptContainer(jobject vec1, jobject vec2);
 
     jobject getAABB();
+
 private:
     jmethodID mdExpand;
     jmethodID mdAddCoord;
@@ -43,6 +39,5 @@ private:
 
     jobject aabb;
 };
-
 
 #endif //PHANTOM_AXISALIGNEDBB_H

@@ -20,7 +20,8 @@
 #include "cheats/Reach.h"
 #include "cheats/ESP.h"
 #include "cheats/AutoClicker.h"
-
+#include "cheats/STap.h"
+#include "cheats/Clip.h"
 #include "ui/KeyManager.h"
 
 Phantom::Phantom() {
@@ -44,10 +45,12 @@ Phantom::Phantom() {
     cheats.push_back(new FastPlace());
 	cheats.push_back(new AutoSprint());
 	cheats.push_back(new NoHitDelay());
-	cheats.push_back(new Velocity(this)); //untested but should work
-	cheats.push_back(new Reach(this)); //untested but should work
-//	cheats.push_back(new ESP(this)); //crashes ur game
-	cheats.push_back(new AutoClicker()); //untested but should work
+	cheats.push_back(new Velocity(this)); //actually works really good
+	cheats.push_back(new Reach(this)); //honestly idk if this works
+	cheats.push_back(new ESP(this)); // may or may not crash ur game
+	cheats.push_back(new STap(this)); // it was native
+	cheats.push_back(new Clip(this));
+	cheats.push_back(new AutoClicker()); //works fine
     
 }
 

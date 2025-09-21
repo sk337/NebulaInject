@@ -9,7 +9,7 @@
 
 class Vec3 : public AbstractClass {
 public:
-    Vec3(Phantom* phantom, jobject vec3);
+    Vec3(Phantom *phantom, jobject vec3);
 
     jobject getVec3() const;
 

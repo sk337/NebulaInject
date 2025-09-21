@@ -1,90 +1,84 @@
 //
-// Created by Kirby! Remade Reach.cpp for more discrete hit detection (untested)
+// Created by somepineaple on 2/21/22.
 //
 
 #include "Reach.h"
-#include <imgui.h>
-#include <net/minecraft/client/multiplayer/WorldClient.h>
+
 #include <java/util/JavaList.h>
-#include <net/minecraft/client/renderer/EntityRenderer.h>
-#include <net/minecraft/entity/Entity.h>
-#include <net/minecraft/util/Vec3.h>
-#include <net/minecraft/client/Minecraft.h>
+#include <net/minecraft/client/multiplayer/WorldClient.h>
+#include <imgui.h>
 
-Reach::Reach(Phantom *phantom) : Cheat("Reach", "Tf2 Sniper") {
+Reach::Reach(Phantom *phantom) : Cheat("Reach", "Long arm hack") {
+    reach = 3.2;
     this->phantom = phantom;
-    reach = 3.2f;
 }
 
-// Slider for reach distance
 void Reach::renderSettings() {
-    ImGui::SliderFloat("Hit Distance", &reach, 3.0f, 6.0f, "%.2f");
+    ImGui::SliderFloat("Hit Distance", &reach, 3, 6, "%.2f");
 }
 
-// Linear interpolation helper
-
-Vec3 lerpVec3(const Vec3 &from, const Vec3 &to, float t, Phantom *phantom) {
-    // Compute offset vector from "from" to "to", then scale it by t
-    double dx = (to.getXCoord() - from.getXCoord()) * t;
-    double dy = (to.getYCoord() - from.getYCoord()) * t;
-    double dz = (to.getZCoord() - from.getZCoord()) * t;
-
-    // Use addVectorContainer to produce the new Vec3
-    return from.addVectorContainer(dx, dy, dz);
-}
-
-
-// Main logic
+// This is basically a copy of how minecraft calculates what block your looking at, but with modified reach values.
 void Reach::run(Minecraft *mc) {
-    Entity viewEntity = mc->getRenderViewEntityContainer();
-    EntityRenderer renderer = mc->getEntityRendererContainer();
-
-    if (!viewEntity.getEntity()) return;
-
-    float partialTicks = mc->getTimerContainer().getPartialTicks();
-    Vec3 eyePos = viewEntity.getPositionEyesContainer(partialTicks);
-    Vec3 lookVec = viewEntity.getLookContainer(partialTicks);
-
-    Vec3 targetVec = eyePos.addVectorContainer(lookVec.getXCoord() * reach,
-                                               lookVec.getYCoord() * reach,
-                                               lookVec.getZCoord() * reach);
-
-    renderer.setPointedEntity(nullptr);
-
-    AxisAlignedBB bb = viewEntity.getEntityBoundingBoxContainer();
-    JavaList entities = mc->getWorldContainer().getEntitiesWithinAABBExcluding(
-        viewEntity.getEntity(), bb.getAddCoordContainer(lookVec.getXCoord() * reach,
-                                                        lookVec.getYCoord() * reach,
-                                                        lookVec.getZCoord() * reach).expand(1,1,1)
-    );
-
+    Entity renderViewEntity = mc->getRenderViewEntityContainer();
+    EntityRenderer entityRenderer = mc->getEntityRendererContainer();
     Vec3 hitVec(phantom, nullptr);
-    double closestDist = reach;
     Entity ridingEntity(phantom, nullptr);
 
-    for (int i = 0; i < entities.size(); i++) {
-        Entity ent(mc->getPhantom(), entities.get(i));
-        if (!ent.canBeCollidedWith()) continue;
+    if (renderViewEntity.getEntity() != nullptr) {
+        float partialTicks = mc->getTimerContainer().getPartialTicks();
 
-        float border = ent.getCollisionBorderSize();
-        AxisAlignedBB entityBB = ent.getEntityBoundingBoxContainer().getExpandContainer(border, border, border);
-        MovingObjectPosition mop = entityBB.getCalculateInterceptContainer(eyePos.getVec3(), targetVec.getVec3());
+        double var2 = reach;
+        double var4 = var2;
 
-        if (mop.getMovingObjectPosition()) hitVec = mop.getHitVecContainer();
+        Vec3 var6 = mc->getRenderViewEntityContainer().getPositionEyesContainer(partialTicks);
+        Vec3 var7 = renderViewEntity.getLookContainer(partialTicks);
+        Vec3 var8 = var6.addVectorContainer(var7.getXCoord() * var2, var7.getYCoord() * var2, var7.getZCoord() * var2);
+        entityRenderer.setPointedEntity(nullptr);
+        Vec3 var9(phantom, nullptr);
+        float var10 = 1;
+        AxisAlignedBB boundingBox = renderViewEntity.getEntityBoundingBoxContainer();
+        JavaList var11 = mc->getWorldContainer().getEntitiesWithinAABBExcluding(renderViewEntity.getEntity(), boundingBox.getAddCoordContainer(var7.getXCoord() * var2, var7.getYCoord() * var2, var7.getZCoord() * var2).expand(var10, var10, var10));
+        double var12 = var4;
 
-        if (entityBB.isVecInside(eyePos.getVec3()) || (mop.getMovingObjectPosition() && eyePos.distanceTo(hitVec.getVec3()) < closestDist)) {
-            ridingEntity = viewEntity.getRidingEntityContainer();
-            if (!ridingEntity.getEntity() || ent.getId() != ridingEntity.getId()) {
-                renderer.setPointedEntity(ent.getEntity());
-                hitVec = lerpVec3(eyePos, hitVec, 0.7f, phantom); // smooth lerp
-                closestDist = eyePos.distanceTo(hitVec.getVec3());
+        for (int var14 = 0; var14 < var11.size(); var14++) {
+            Entity var15(mc->getPhantom(), var11.get(var14));
+
+            if (var15.canBeCollidedWith()) {
+                float var16 = var15.getCollisionBorderSize();
+                AxisAlignedBB var17 = var15.getEntityBoundingBoxContainer().getExpandContainer(var16, var16, var16);
+                MovingObjectPosition var18 = var17.getCalculateInterceptContainer(var6.getVec3(), var8.getVec3());
+                if (var18.getMovingObjectPosition() != nullptr)
+                    hitVec = var18.getHitVecContainer();
+
+                if (var17.isVecInside(var6.getVec3())) {
+                    if (0 <= var12) {
+                        entityRenderer.setPointedEntity(var15.getEntity());
+                        var9 = var18.getMovingObjectPosition() == nullptr ? var6 : hitVec;
+                        var12 = 0;
+                    }
+                } else if (var18.getMovingObjectPosition() != nullptr) {
+                    double var19 = var6.distanceTo(hitVec.getVec3());
+                    if (var19 < var12 || var12 == 0) {
+                        ridingEntity = renderViewEntity.getRidingEntityContainer();
+                        if (ridingEntity.getEntity() != nullptr && var15.getId() == ridingEntity.getId()) {
+                            if (var12 == 0) {
+                                entityRenderer.setPointedEntity(var15.getEntity());
+                                var9 = hitVec;
+                            }
+                        } else {
+                            entityRenderer.setPointedEntity(var15.getEntity());
+                            var9 = hitVec;
+                            var12 = var19;
+                        }
+                    }
+                }
             }
         }
-    }
 
-    if (renderer.getPointedEntityContainer().getEntity() && closestDist > 3.0) {
-        jclass movingObjectClass = mc->getClass("net.minecraft.util.MovingObjectPosition");
-        jmethodID ctor = phantom->getEnv()->GetMethodID(movingObjectClass, "<init>", "(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/Vec3;)V");
-        mc->setObjectMouseOver(phantom->getEnv()->NewObject(movingObjectClass, ctor, renderer.getPointedEntity(), hitVec.getVec3()));
+        if (entityRenderer.getPointedEntityContainer().getEntity() != nullptr && var12 > 3) {
+            jclass MovingObjectPosition = mc->getClass("net.minecraft.util.MovingObjectPosition");
+            jmethodID movingObjectPositionConstructor = phantom->getEnv()->GetMethodID(MovingObjectPosition, "<init>", "(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/Vec3;)V");
+            mc->setObjectMouseOver(phantom->getEnv()->NewObject(MovingObjectPosition, movingObjectPositionConstructor, entityRenderer.getPointedEntity(), var9.getVec3()));
+        }
     }
 }
