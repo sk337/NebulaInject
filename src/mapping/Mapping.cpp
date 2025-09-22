@@ -1,340 +1,944 @@
-//
-// Some of this code was copied from UDP-CPP:
-// https://github.com/UnknownDetectionParty/UDP-CPP
-//
-
 #include "Mapping.h"
-#include <mutex>
-#include <memory>
+#include <unordered_map>
+#include <string>
+#include <string_view>
 
-// Use shared_ptr for safer memory management
-std::map<std::string, std::shared_ptr<CM>> lookup;
-std::mutex lookup_mutex;
+static std::unordered_map<std::string_view, std::string_view> g_Mappings;
 
-CM* Mapping::getClass(const char* key) {
-    if (!key) {
-        std::cerr << "[Mapping ERROR] Null key provided to getClass" << std::endl;
-        return nullptr;
+void Mapping::Initialize(const GameVersions version)
+{
+    // Clear any previous mappings
+    g_Mappings.clear();
+
+    switch (version)
+    {
+    case CASUAL_1_7_10: {
+        g_Mappings = {
+            {"net/minecraft/client/Minecraft", "bao"},
+            {"net/minecraft/client/entity/EntityClientPlayerMP", "bjk"},
+            {"net/minecraft/client/multiplayer/WorldClient", "bjf"},
+            {"net/minecraft/client/gui/GuiScreen", "bdw"},
+            {"net/minecraft/client/renderer/entity/RenderManager", "bnn"},
+            { "net/minecraft/entity/Entity", "sa" },
+            {"net/minecraft/client/renderer/entity/Render", "bno"},
+            {"net/minecraft/client/model/ModelBase", "bhr"},
+            {"net/minecraft/client/renderer/ActiveRenderInfo", "baj"},
+            { "net/minecraft/util/IChatComponent", "fj" },
+            {"net/minecraft/client/model/ModelRenderer", "bix"},
+            {"net/minecraft/util/Timer", "bbr"},
+            {"net/minecraft/client/gui/Gui", "bbw"},
+            {"net/minecraft/client/gui/FontRenderer", "bbu"},
+            { "net/minecraft/util/AxisAlignedBB", "azt" },
+            {"net/minecraft/client/gui/GuiChat", "bct"},
+            {"net/minecraft/client/renderer/entity/RendererLivingEntity", "boh"},
+            { "net/minecraft/item/ItemStack", "add" },
+            { "net/minecraft/item/ItemSword", "aeh" },
+            { "net/minecraft/item/ItemAxe", "abf" },
+            { "net/minecraft/item/Item", "adb" },
+            { "net/minecraft/item/ItemBlock", "abh" },
+            {"net/minecraft/util/MovingObjectPosition$MovingObjectType", "azv"},
+            {"net/minecraft/util/MovingObjectPosition", "azu"},
+            {"net/minecraft/client/gui/inventory/GuiInventory", "bfu"},
+            {"net/minecraft/client/gui/GuiChat", "bct"},
+            {"net/minecraft/entity/player/InventoryPlayer", "yx"},
+            {"net/minecraft/item/ItemEnderPearl", "aco"},
+            { "net/minecraft/block/Block", "aji" },
+            {"net/minecraft/client/settings/GameSettings", "bbj"},
+            { "net/minecraft/client/settings/KeyBinding", "bal" },
+            {"net/minecraft/block/BlockAir", "aja"},
+            { "keyBindSneak", "Z" },
+            { "pressed", "h" },
+            {"gameSettings", "u"},
+            { "getBlock", "a" },
+            { "getIdFromBlock", "b" },
+            {"theMinecraft", "M"},
+            {"thePlayer", "h"},
+            {"theWorld", "f"},
+            {"currentScreen", "n"},
+            {"renderManagerInstance", "a"},
+            {"getEntityRenderObject", "a"},
+            {"mainModel", "i"},
+            {"PROJECTION", "k"},
+            {"MODELVIEW", "j"},
+            {"playerEntities", "h"},
+            { "getDisplayName", "c_" },
+            { "getUnformattedTextForChat", "e" },
+            {"rotationPitch", "z"},
+            {"rotationYaw", "y"},
+            {"prevRotationYaw", "A"},
+            {"prevRotationPitch", "B"},
+            {"posX", "s"},
+            {"posY", "t"},
+            {"posZ", "u"},
+            {"motionX", "v"},
+            {"motionY", "w"},
+            {"motionZ", "x"},
+            {"maxHurtResistantTime", "aH"},
+            {"hurtResistantTime", "ad"},
+            {"bipedHeadwear", "d"},
+            {"bipedRightArm", "f"},
+            {"bipedLeftArm", "g"},
+            {"bipedRightLeg", "h"},
+            {"bipedLeftLeg", "i"},
+            {"rotateAngleX","f"},
+            {"rotateAngleY","g"},
+            {"rotateAngleZ","h"},
+            {"prevRenderYawOffset", "aN"},
+            {"renderYawOffset", "aM"},
+            { "renderPartialTicks", "c" },
+            { "lastTickPosX", "S" },
+            { "lastTickPosY", "T" },
+            { "lastTickPosZ", "U" },
+            {"timer", "Q"},
+            { "displayWidth", "d" },
+            { "displayHeight", "e" },
+            {"renderPosX", "b"},
+            {"renderPosY", "c"},
+            {"renderPosZ", "d"},
+            {"drawRect", "a"},
+            {"getStringWidth", "a"},
+            {"drawString", "a"},
+            {"fontRendererObj", "l"},
+            { "getHealth", "aS" },
+            {"setAlwaysRenderNameTag",  "g"},
+            { "isInvisible", "ap" },
+            {"maxHurtResistantTime", "aH"},
+            {"hurtResistantTime", "ad"},
+            {"viewerPosX", "m"},
+            {"viewerPosY", "n" },
+            {"viewerPosZ", "o" },
+            { "boundingBox", "C" },
+            {"minX", "a"},
+            {"minY", "b"},
+            {"minZ", "c"},
+            {"maxX", "d"},
+            {"maxY", "e"},
+            {"maxZ", "f"},
+            { "prevPosX", "p" },
+            { "prevPosY", "q" },
+            { "prevPosZ", "r" },
+            {"isSneaking", "an"},
+            {"rotationYawHead", "aO"},
+            {"onGround", "D"},
+            { "getHeldItem", "be" },
+            {"item", "e"},
+            { "getItem", "b" },
+            {"typeOfHit", "a"},
+            {"BLOCK", "b"},
+            {"ENTITY", "c"},
+            { "objectMouseOver", "t" },
+            {"inWater", "ac"},
+            { "moveForward", "be" },
+            { "moveStrafing", "bd" },
+            { "timerSpeed", "d" },
+            { "inventory", "bm" },
+            { "currentItem", "c" },
+            { "getStackInSlot", "a" },
+            { "metadata", "f" },
+        };
+        break;
     }
-    
-    std::lock_guard<std::mutex> lock(lookup_mutex);
-    std::string k(key);
-    
-    // Use safe find instead of at()
-    auto it = lookup.find(k);
-    if (it == lookup.end()) {
-        std::cerr << "[Mapping ERROR] Class not found in lookup: " << k << std::endl;
-        return nullptr;
+    case CASUAL_1_8: {
+        g_Mappings = {
+            {"net/minecraft/client/Minecraft", "ave"},
+            {"net/minecraft/client/entity/EntityClientPlayerMP", "bew"},
+            {"net/minecraft/client/multiplayer/WorldClient", "bdb"},
+            {"net/minecraft/client/gui/GuiScreen", "axu"},
+            {"net/minecraft/client/renderer/entity/RenderManager", "biu"},
+            { "net/minecraft/entity/Entity", "pk" },
+            {"net/minecraft/client/renderer/entity/Render", "biv"},
+            {"net/minecraft/client/model/ModelBase", "bbo"},
+            {"net/minecraft/client/renderer/ActiveRenderInfo", "auz"},
+            { "net/minecraft/util/IChatComponent", "eu" },
+            {"net/minecraft/client/model/ModelRenderer", "bct"},
+            {"net/minecraft/util/Timer", "avl"},
+            {"net/minecraft/client/gui/Gui", "avp"},
+            {"net/minecraft/client/gui/FontRenderer", "avn"},
+            {"net/minecraft/util/AxisAlignedBB", "aug"},
+            {"net/minecraft/client/gui/GuiChat", "awv"},
+            {"net/minecraft/client/renderer/entity/RendererLivingEntity", "bjl"},
+            {"net/minecraft/item/ItemStack", "zx"},
+            {"net/minecraft/item/ItemSword", "aay"},
+            {"net/minecraft/item/ItemAxe", "yl"},
+            {"net/minecraft/item/Item", "zw"},
+            { "net/minecraft/item/ItemBlock", "yo" },
+            {"net/minecraft/util/MovingObjectPosition$MovingObjectType", "auh$a"},
+            {"net/minecraft/util/MovingObjectPosition", "auh"},
+            {"net/minecraft/client/gui/inventory/GuiInventory", "azc"},
+            {"net/minecraft/client/gui/GuiChat", "awv"},
+            {"net/minecraft/entity/player/InventoryPlayer", "wm"},
+            {"net/minecraft/item/ItemEnderPearl", "zk"},
+            { "net/minecraft/block/Block", "afh" },
+            { "net/minecraft/block/state/IBlockState", "alz" },
+            {"net/minecraft/util/BlockPos", "cj"},
+            {"net/minecraft/client/settings/GameSettings", "avh"},
+            { "net/minecraft/client/settings/KeyBinding", "net/minecraft/client/settings/KeyBinding" },
+            {"net/minecraft/block/BlockAir", "aey"},
+            { "keyBindSneak", "field_74311_E" },
+            { "pressed", "field_74513_e" },
+            {"gameSettings", "t"},
+            { "getBlockState", "p" },
+            { "getBlock", "c" },
+            { "getIdFromBlock", "a" },
+            {"theMinecraft", "S"},
+            {"thePlayer", "h"},
+            {"theWorld", "f"},
+            {"currentScreen", "m"},
+            {"getRenderManager", "af"},
+            {"getEntityRenderObject", "a"},
+            {"mainModel", "f"},
+            {"PROJECTION", "c"},
+            {"MODELVIEW", "b"},
+            {"playerEntities", "j"},
+            { "getDisplayName", "f_" },
+            {"getUnformattedTextForChat", "e"},
+            {"rotationPitch", "z"},
+            {"rotationYaw", "y"},
+            {"prevRotationYaw", "A"},
+            {"prevRotationPitch", "B"},
+            {"posX", "s"},
+            {"posY", "t"},
+            {"posZ", "u"},
+            {"motionX", "v"},
+            {"motionY", "w"},
+            {"motionZ", "x"},
+            {"maxHurtResistantTime", "aD"},
+            {"hurtResistantTime", "Z"},
+            {"bipedHeadwear", "f"},
+            {"bipedRightArm", "h"},
+            {"bipedLeftArm", "i"},
+            {"bipedRightLeg", "j"},
+            {"bipedLeftLeg", "k"},
+            {"rotateAngleX","f"},
+            {"rotateAngleY","g"},
+            {"rotateAngleZ","h"},
+            {"prevRenderYawOffset", "aJ"},
+            {"renderYawOffset", "aI"},
+            {"renderPartialTicks", "c"},
+            {"lastTickPosX", "P"},
+            {"lastTickPosY", "Q"},
+            {"lastTickPosZ", "R"},
+            {"timer", "Y"},
+            {"displayWidth", "d"},
+            {"displayHeight", "e"},
+            { "renderPosX", "o" },
+            { "renderPosY", "p" },
+            { "renderPosZ", "q" },
+            {"drawRect", "a"},
+            {"getStringWidth", "a"},
+            {"drawString", "a"},
+            {"fontRendererObj", "k"},
+            { "getHealth", "bn" },
+            {"setAlwaysRenderNameTag",  "g"},
+            {"isInvisible", "ax"},
+            {"maxHurtResistantTime", "aD"},
+            {"hurtResistantTime", "Z"},
+            { "viewerPosX", "h" },
+            { "viewerPosY", "i" },
+            { "viewerPosZ", "j" },
+            {"boundingBox", "f"},
+            {"minX", "a"},
+            {"minY", "b"},
+            {"minZ", "c"},
+            {"maxX", "d"},
+            {"maxY", "e"},
+            {"maxZ", "f"},
+            {"prevPosX", "p"},
+            {"prevPosY", "q"},
+            {"prevPosZ", "r"},
+            {"isSneaking", "av"},
+            {"rotationYawHead", "aK"},
+            {"onGround", "C"},
+            {"getHeldItem", "bA"},
+            {"item", "d"},
+            {"getItem", "b"},
+            {"typeOfHit", "a"},
+            {"BLOCK", "b"},
+            {"ENTITY", "c"},
+            { "objectMouseOver", "s" },
+            { "inWater", "Y" },
+            { "moveForward", "ba" },
+            { "moveStrafing", "aZ" },
+            { "timerSpeed", "d" },
+            { "inventory", "bi" },
+            { "currentItem", "c" },
+            { "getStackInSlot", "a" },
+            { "metadata", "f" },
+        };
+        break;
     }
-    return it->second.get(); // Return raw pointer from shared_ptr
+    case FORGE_1_7_10: {
+        g_Mappings = {
+            {"net/minecraft/client/Minecraft", "net/minecraft/client/Minecraft"},
+            {"net/minecraft/client/entity/EntityClientPlayerMP", "net/minecraft/client/entity/EntityClientPlayerMP"},
+            {"net/minecraft/client/multiplayer/WorldClient", "net/minecraft/client/multiplayer/WorldClient"},
+            {"net/minecraft/client/gui/GuiScreen", "net/minecraft/client/gui/GuiScreen"},
+            {"net/minecraft/client/renderer/entity/RenderManager", "net/minecraft/client/renderer/entity/RenderManager"},
+            { "net/minecraft/entity/Entity", "net/minecraft/entity/Entity" },
+            {"net/minecraft/client/renderer/entity/Render", "net/minecraft/client/renderer/entity/Render"},
+            {"net/minecraft/client/model/ModelBase", "net/minecraft/client/model/ModelBase"},
+            {"net/minecraft/client/renderer/ActiveRenderInfo", "net/minecraft/client/renderer/ActiveRenderInfo"},
+            { "net/minecraft/util/IChatComponent", "net/minecraft/util/IChatComponent" },
+            {"net/minecraft/client/model/ModelRenderer", "net/minecraft/client/model/ModelRenderer"},
+            {"net/minecraft/util/Timer", "net/minecraft/util/Timer"},
+            {"net/minecraft/client/gui/Gui", "net/minecraft/client/gui/Gui"},
+            {"net/minecraft/client/gui/FontRenderer", "net/minecraft/client/gui/FontRenderer"},
+            {"net/minecraft/util/AxisAlignedBB", "net/minecraft/util/AxisAlignedBB"},
+            {"net/minecraft/client/gui/GuiChat", "net/minecraft/client/gui/GuiChat"},
+            {"net/minecraft/client/renderer/entity/RendererLivingEntity", "net/minecraft/client/renderer/entity/RendererLivingEntity"},
+            { "net/minecraft/item/ItemStack", "net/minecraft/item/ItemStack" },
+            { "net/minecraft/item/ItemSword", "net/minecraft/item/ItemSword" },
+            { "net/minecraft/item/ItemAxe", "net/minecraft/item/ItemAxe" },
+            { "net/minecraft/item/Item", "net/minecraft/item/Item" },
+            { "net/minecraft/item/ItemBlock", "net/minecraft/item/ItemBlock" },
+            {"net/minecraft/util/MovingObjectPosition$MovingObjectType", "net/minecraft/util/MovingObjectPosition_MovingObjectType"},
+            {"net/minecraft/util/MovingObjectPosition", "net/minecraft/util/MovingObjectPosition"},
+            {"net/minecraft/client/gui/inventory/GuiInventory", "net/minecraft/client/gui/inventory/GuiInventory"},
+            {"net/minecraft/client/gui/GuiChat", "net/minecraft/client/gui/GuiChat"},
+            {"net/minecraft/entity/player/InventoryPlayer", "net/minecraft/entity/player/InventoryPlayer"},
+            {"net/minecraft/item/ItemEnderPearl", "net/minecraft/item/ItemEnderPearl"},
+            { "net/minecraft/block/Block", "net/minecraft/block/Block" },
+            {"net/minecraft/client/settings/GameSettings", "net/minecraft/client/settings/GameSettings"},
+            { "net/minecraft/client/settings/KeyBinding", "net/minecraft/client/settings/KeyBinding" },
+            {"net/minecraft/block/BlockAir", "net/minecraft/block/BlockAir"},
+            { "keyBindSneak", "field_74311_E" },
+            { "pressed", "field_74513_e" },
+            {"gameSettings", "field_71474_y"},
+            { "getBlock", "func_147439_a" },
+            { "getIdFromBlock", "func_149682_b" },
+            {"theMinecraft", "field_71432_P"},
+            {"thePlayer", "field_71439_g"},
+            {"theWorld", "field_71441_e"},
+            {"currentScreen", "field_71462_r"},
+            {"renderManagerInstance", "field_78727_a" },
+            {"getEntityRenderObject", "func_78713_a"},
+            {"mainModel", "field_77045_g"},
+            {"PROJECTION", "field_74595_k"},
+            {"MODELVIEW", "field_74594_j"},
+            {"playerEntities", "field_73010_i"},
+            { "getDisplayName", "func_145748_c_" },
+            { "getUnformattedTextForChat", "func_150261_e" },
+            {"rotationPitch", "field_70125_A"},
+            {"rotationYaw", "field_70177_z"},
+            {"prevRotationYaw", "field_70126_B"},
+            {"prevRotationPitch", "field_70127_C"},
+            {"posX", "field_70165_t"},
+            {"posY", "field_70163_u"},
+            {"posZ", "field_70161_v"},
+            {"motionX", "field_70159_w"},
+            {"motionY", "field_70181_x"},
+            {"motionZ", "field_70179_y"},
+            {"maxHurtResistantTime", "field_70771_an"},
+            {"hurtResistantTime", "field_70172_ad"},
+            {"bipedHeadwear", "field_78114_d"},
+            {"bipedRightArm", "field_78112_f"},
+            {"bipedLeftArm", "field_78113_g"},
+            {"bipedRightLeg", "field_78123_h"},
+            {"bipedLeftLeg", "field_78124_i"},
+            {"rotateAngleX","field_78795_f"},
+            {"rotateAngleY","field_78796_g"},
+            {"rotateAngleZ","field_78808_h"},
+            {"prevRenderYawOffset", "field_70760_ar"},
+            {"renderYawOffset", "field_70761_aq"},
+            { "renderPartialTicks", "field_74281_c" },
+            { "lastTickPosX", "field_70142_S" },
+            { "lastTickPosY", "field_70137_T" },
+            { "lastTickPosZ", "field_70136_U" },
+            {"timer", "field_71428_T"},
+            { "displayWidth", "field_71443_c" },
+            { "displayHeight", "field_71440_d" },
+            { "renderPosX", "field_78725_b" },
+            { "renderPosY", "field_78726_c" },
+            { "renderPosZ", "field_78723_d" },
+            {"drawRect", "func_73734_a"},
+            {"getStringWidth", "func_78256_a"},
+            {"drawString", "func_85187_a"},
+            {"fontRendererObj", "field_71466_p"},
+            { "getHealth", "func_110143_aJ" },
+            {"setAlwaysRenderNameTag",  "func_94061_f"},
+            { "isInvisible", "func_82150_aj" },
+            {"maxHurtResistantTime", "field_70771_an"},
+            {"hurtResistantTime", "field_70172_ad"},
+            { "viewerPosX", "field_78730_l" },
+            { "viewerPosY", "field_78731_m" },
+            { "viewerPosZ", "field_78728_n" },
+            { "boundingBox", "field_70121_D" },
+            { "minX", "field_72340_a" },
+            { "minY", "field_72338_b" },
+            { "minZ", "field_72339_c" },
+            { "maxX", "field_72336_d" },
+            { "maxY", "field_72337_e" },
+            { "maxZ", "field_72334_f" },
+            { "prevPosX", "field_70169_q" },
+            { "prevPosY", "field_70167_r" },
+            { "prevPosZ", "field_70166_s" },
+            {"isSneaking", "func_70093_af"},
+            {"rotationYawHead", "field_70759_as"},
+            {"onGround", "field_70122_E"},
+            { "getHeldItem", "func_70694_bm" },
+            {"item", "field_151002_e"},
+            { "getItem", "func_77973_b" },
+            {"typeOfHit", "field_72313_a"},
+            {"BLOCK", "BLOCK"},
+            {"ENTITY", "ENTITY"},
+            { "objectMouseOver", "field_71476_x" },
+            { "inWater", "field_70171_ac" },
+            { "moveForward", "field_70701_bs" },
+            { "moveStrafing", "field_70702_br" },
+            { "timerSpeed", "field_74278_d" },
+            { "inventory", "field_71071_by" },
+            { "currentItem", "field_70461_c" },
+            { "getStackInSlot", "func_70301_a" },
+            { "metadata", "field_77991_e" },
+        };
+        break;
+    }
+    case FORGE_1_8: {
+        g_Mappings = {
+            {"net/minecraft/client/Minecraft", "net/minecraft/client/Minecraft"},
+            {"net/minecraft/client/entity/EntityClientPlayerMP", "net/minecraft/client/entity/EntityPlayerSP"},
+            {"net/minecraft/client/multiplayer/WorldClient", "net/minecraft/client/multiplayer/WorldClient"},
+            {"net/minecraft/client/gui/GuiScreen", "net/minecraft/client/gui/GuiScreen"},
+            {"net/minecraft/client/renderer/entity/RenderManager", "net/minecraft/client/renderer/entity/RenderManager"},
+            { "net/minecraft/entity/Entity", "net/minecraft/entity/Entity" },
+            {"net/minecraft/client/renderer/entity/Render", "net/minecraft/client/renderer/entity/Render"},
+            {"net/minecraft/client/model/ModelBase", "net/minecraft/client/model/ModelBase"},
+            {"net/minecraft/client/renderer/ActiveRenderInfo", "net/minecraft/client/renderer/ActiveRenderInfo"},
+            { "net/minecraft/util/IChatComponent", "net/minecraft/util/IChatComponent" },
+            {"net/minecraft/client/model/ModelRenderer", "net/minecraft/client/model/ModelRenderer"},
+            {"net/minecraft/util/Timer", "net/minecraft/util/Timer"},
+            {"net/minecraft/client/gui/Gui", "net/minecraft/client/gui/Gui"},
+            {"net/minecraft/client/gui/FontRenderer", "net/minecraft/client/gui/FontRenderer"},
+            {"net/minecraft/util/AxisAlignedBB", "net/minecraft/util/AxisAlignedBB"},
+            {"net/minecraft/client/gui/GuiChat", "net/minecraft/client/gui/GuiChat"},
+            {"net/minecraft/client/renderer/entity/RendererLivingEntity", "net/minecraft/client/renderer/entity/RendererLivingEntity"},
+            { "net/minecraft/item/ItemStack", "net/minecraft/item/ItemStack" },
+            { "net/minecraft/item/ItemSword", "net/minecraft/item/ItemSword" },
+            { "net/minecraft/item/ItemAxe", "net/minecraft/item/ItemAxe" },
+            { "net/minecraft/item/Item", "net/minecraft/item/Item" },
+            { "net/minecraft/item/ItemBlock", "net/minecraft/item/ItemBlock" },
+            {"net/minecraft/util/MovingObjectPosition$MovingObjectType", "net/minecraft/util/MovingObjectPosition$MovingObjectType"},
+            {"net/minecraft/util/MovingObjectPosition", "net/minecraft/util/MovingObjectPosition"},
+            {"net/minecraft/client/gui/inventory/GuiInventory", "net/minecraft/client/gui/inventory/GuiInventory"},
+            {"net/minecraft/client/gui/GuiChat", "net/minecraft/client/gui/GuiChat"},
+            {"net/minecraft/entity/player/InventoryPlayer", "net/minecraft/entity/player/InventoryPlayer"},
+            {"net/minecraft/item/ItemEnderPearl", "net/minecraft/item/ItemEnderPearl"},
+            { "net/minecraft/block/Block", "net/minecraft/block/Block" },
+            { "net/minecraft/block/state/IBlockState", "net/minecraft/block/state/IBlockState" },
+            {"net/minecraft/util/BlockPos", "net/minecraft/util/BlockPos"},
+            {"net/minecraft/client/settings/GameSettings", "net/minecraft/client/settings/GameSettings"},
+            { "net/minecraft/client/settings/KeyBinding", "net/minecraft/client/settings/KeyBinding" },
+            {"net/minecraft/block/BlockAir", "net/minecraft/block/BlockAir"},
+            { "keyBindSneak", "field_74311_E" },
+            { "pressed", "field_74513_e" },
+            {"gameSettings", "field_71474_y"},
+            { "getBlockState", "func_180495_p" },
+            { "getBlock", "func_177230_c" },
+            { "getIdFromBlock", "func_149682_b" },
+            {"theMinecraft", "field_71432_P"},
+            {"thePlayer", "field_71439_g"},
+            {"theWorld", "field_71441_e"},
+            {"currentScreen", "field_71462_r"},
+            {"getRenderManager", "func_175598_ae"},
+            {"getEntityRenderObject", "func_78713_a"},
+            {"mainModel", "field_77045_g"},
+            {"PROJECTION", "field_178813_c"},
+            {"MODELVIEW", "field_178812_b"},
+            {"playerEntities", "field_73010_i"},
+            { "getDisplayName", "func_145748_c_" },
+            {"getUnformattedTextForChat", "func_150261_e"},
+            {"rotationPitch", "field_70125_A"},
+            {"rotationYaw", "field_70177_z"},
+            {"prevRotationYaw", "field_70126_B"},
+            {"prevRotationPitch", "field_70127_C"},
+            {"prevPosX", "field_70169_q"},
+            {"prevPosY", "field_70167_r"},
+            {"prevPosZ", "field_70166_s"},
+            {"motionX", "field_70159_w"},
+            {"motionY", "field_70181_x"},
+            {"motionZ", "field_70179_y"},
+            {"maxHurtResistantTime", "field_70771_an"},
+            {"hurtResistantTime", "field_70172_ad"},
+            {"bipedHeadwear", "field_178720_f"},
+            {"bipedRightArm", "field_178723_h"},
+            {"bipedLeftArm", "field_178724_i"},
+            {"bipedRightLeg", "field_178721_j"},
+            {"bipedLeftLeg", "field_178722_k"},
+            {"rotateAngleX","field_78795_f"},
+            {"rotateAngleY","field_78796_g"},
+            {"rotateAngleZ","field_78808_h"},
+            {"prevRenderYawOffset", "field_70760_ar"},
+            {"renderYawOffset", "field_70761_aq"},
+            { "renderPartialTicks", "field_74281_c" },
+            {"lastTickPosX", "field_70142_S"},
+            {"lastTickPosY", "field_70137_T"},
+            {"lastTickPosZ", "field_70136_U"},
+            {"timer", "field_71428_T"},
+            {"displayWidth", "field_71443_c"},
+            {"displayHeight", "field_71440_d"},
+            { "renderPosX", "field_78725_b" },
+            { "renderPosY", "field_78726_c" },
+            { "renderPosZ", "field_78723_d" },
+            {"drawRect", "func_73734_a"},
+            {"getStringWidth", "func_78256_a"},
+            {"drawString", "func_175065_a"},
+            {"fontRendererObj", "field_71466_p"},
+            { "getHealth", "func_110143_aJ" },
+            {"setAlwaysRenderNameTag",  "func_174805_g"},
+            {"isInvisible", "func_82150_aj"},
+            {"maxHurtResistantTime", "field_70771_an"},
+            {"hurtResistantTime", "field_70172_ad"},
+            { "viewerPosX", "field_78730_l" },
+            { "viewerPosY", "field_78731_m" },
+            { "viewerPosZ", "field_78728_n" },
+            {"boundingBox", "field_70121_D"},
+            {"minX", "field_72340_a"},
+            {"minY", "field_72338_b"},
+            {"minZ", "field_72339_c"},
+            {"maxX", "field_72336_d"},
+            {"maxY", "field_72337_e"},
+            {"maxZ", "field_72334_f"},
+            {"prevPosX", "field_70169_q"},
+            {"prevPosY", "field_70167_r"},
+            {"prevPosZ", "field_70166_s"},
+            {"isSneaking", "func_70093_af"},
+            {"rotationYawHead", "field_70759_as"},
+            {"onGround", "field_70122_E"},
+            {"getHeldItem", "func_70694_bm"},
+            {"item", "field_151002_e"},
+            {"getItem", "func_77973_b"},
+            {"typeOfHit", "field_72313_a"},
+            {"BLOCK", "BLOCK"},
+            {"ENTITY", "ENTITY"},
+            { "objectMouseOver", "field_71476_x" },
+            { "inWater", "field_70171_ac" },
+            { "moveForward", "field_70701_bs" },
+            { "moveStrafing", "field_70702_br" },
+            { "timerSpeed", "field_74278_d" },
+            { "inventory", "field_71071_by" },
+            { "currentItem", "field_70461_c" },
+            { "getStackInSlot", "func_70301_a" },
+            { "metadata", "field_77991_e" },
+        };
+        break;
+    }
+    case FEATHER_1_8: {
+        g_Mappings = {
+       	{"net/minecraft/client/Minecraft", "net/minecraft/client/Minecraft"},
+			{"net/minecraft/client/entity/EntityClientPlayerMP", "net/minecraft/client/entity/EntityPlayerSP"},
+			{"net/minecraft/client/multiplayer/WorldClient", "net/minecraft/client/multiplayer/WorldClient"},
+			{"net/minecraft/client/gui/GuiScreen", "net/minecraft/client/gui/GuiScreen"},
+			{"net/minecraft/client/renderer/entity/RenderManager", "net/minecraft/client/renderer/entity/RenderManager"},
+			{ "net/minecraft/entity/Entity", "net/minecraft/entity/Entity" },
+			{"net/minecraft/client/renderer/entity/Render", "net/minecraft/client/renderer/entity/Render"},
+			{"net/minecraft/client/model/ModelBase", "net/minecraft/client/model/ModelBase"},
+			{"net/minecraft/client/renderer/ActiveRenderInfo", "net/minecraft/client/renderer/ActiveRenderInfo"},
+			{ "net/minecraft/util/IChatComponent", "net/minecraft/util/IChatComponent" },
+			{"net/minecraft/client/model/ModelRenderer", "net/minecraft/client/model/ModelRenderer"},
+			{"net/minecraft/util/Timer", "net/minecraft/util/Timer"},
+			{"net/minecraft/client/gui/Gui", "net/minecraft/client/gui/Gui"},
+			{"net/minecraft/client/gui/FontRenderer", "net/minecraft/client/gui/FontRenderer"},
+			{"net/minecraft/util/AxisAlignedBB", "net/minecraft/util/AxisAlignedBB"},
+			{"net/minecraft/client/gui/GuiChat", "net/minecraft/client/gui/GuiChat"},
+			{"net/minecraft/client/renderer/entity/RendererLivingEntity", "net/minecraft/client/renderer/entity/RendererLivingEntity"},
+			{ "net/minecraft/item/ItemStack", "net/minecraft/item/ItemStack" },
+			{ "net/minecraft/item/ItemSword", "net/minecraft/item/ItemSword" },
+			{ "net/minecraft/item/ItemAxe", "net/minecraft/item/ItemAxe" },
+			{ "net/minecraft/item/Item", "net/minecraft/item/Item" },
+			{ "net/minecraft/item/ItemBlock", "net/minecraft/item/ItemBlock" },
+			{"net/minecraft/util/MovingObjectPosition$MovingObjectType", "net/minecraft/util/MovingObjectPosition$MovingObjectType"},
+			{"net/minecraft/util/MovingObjectPosition", "net/minecraft/util/MovingObjectPosition"},
+			{"net/minecraft/client/gui/inventory/GuiInventory", "net/minecraft/client/gui/inventory/GuiInventory"},
+			{"net/minecraft/client/gui/GuiChat", "net/minecraft/client/gui/GuiChat"},
+			{"net/minecraft/entity/player/InventoryPlayer", "net/minecraft/entity/player/InventoryPlayer"},
+			{"net/minecraft/item/ItemEnderPearl", "net/minecraft/item/ItemEnderPearl"},
+			{ "net/minecraft/block/Block", "net/minecraft/block/Block" },
+			{ "net/minecraft/block/state/IBlockState", "net/minecraft/block/state/IBlockState" },
+			{"net/minecraft/util/BlockPos", "net/minecraft/util/BlockPos"},
+			{"net/minecraft/client/settings/GameSettings", "net/minecraft/client/settings/GameSettings"},
+			{ "net/minecraft/client/settings/KeyBinding", "net/minecraft/client/settings/KeyBinding" },
+			{"net/minecraft/block/BlockAir", "net/minecraft/block/BlockAir"},
+			{ "keyBindSneak", "field_74311_E" },
+			{ "pressed", "field_74513_e" },
+			{"gameSettings", "field_71474_y"},
+			{ "getBlockState", "func_180495_p" },
+			{ "getBlock", "func_177230_c" },
+			{ "getIdFromBlock", "func_149682_b" },
+			{"theMinecraft", "field_71432_P"},
+			{"thePlayer", "field_71439_g"},
+			{"theWorld", "field_71441_e"},
+			{"currentScreen", "field_71462_r"},
+			{"getRenderManager", "func_175598_ae"},
+			{"getEntityRenderObject", "func_78713_a"},
+			{"mainModel", "field_77045_g"},
+			{"PROJECTION", "field_178813_c"},
+			{"MODELVIEW", "field_178812_b"},
+			{"playerEntities", "field_73010_i"},
+			{ "getDisplayName", "func_145748_c_" },
+			{"getUnformattedTextForChat", "func_150261_e"},
+			{"rotationPitch", "field_70125_A"},
+			{"rotationYaw", "field_70177_z"},
+			{"prevRotationYaw", "field_70126_B"},
+			{"prevRotationPitch", "field_70127_C"},
+			{"posX", "field_70165_t"},
+			{"posY", "field_70163_u"},
+			{"posZ", "field_70161_v"},
+			{"motionX", "field_70159_w"},
+			{"motionY", "field_70181_x"},
+			{"motionZ", "field_70179_y"},
+			{"maxHurtResistantTime", "field_70771_an"},
+			{"hurtResistantTime", "field_70172_ad"},
+			{"bipedHeadwear", "field_178720_f"},
+			{"bipedRightArm", "field_178723_h"},
+			{"bipedLeftArm", "field_178724_i"},
+			{"bipedRightLeg", "field_178721_j"},
+			{"bipedLeftLeg", "field_178722_k"},
+			{"rotateAngleX","field_78795_f"},
+			{"rotateAngleY","field_78796_g"},
+			{"rotateAngleZ","field_78808_h"},
+			{"prevRenderYawOffset", "field_70760_ar"},
+			{"renderYawOffset", "field_70761_aq"},
+			{ "renderPartialTicks", "field_74281_c" },
+			{"lastTickPosX", "field_70142_S"},
+			{"lastTickPosY", "field_70137_T"},
+			{"lastTickPosZ", "field_70136_U"},
+			{"timer", "field_71428_T"},
+			{"displayWidth", "field_71443_c"},
+			{"displayHeight", "field_71440_d"},
+			{ "renderPosX", "field_78725_b" },
+			{ "renderPosY", "field_78726_c" },
+			{ "renderPosZ", "field_78723_d" },
+			{"drawRect", "func_73734_a"},
+			{"getStringWidth", "func_78256_a"},
+			{"drawString", "func_175065_a"},
+			{"fontRendererObj", "field_71466_p"},
+			{ "getHealth", "func_110143_aJ" },
+			{"setAlwaysRenderNameTag",  "func_174805_g"},
+			{"isInvisible", "func_82150_aj"},
+			{"maxHurtResistantTime", "field_70771_an"},
+			{"hurtResistantTime", "field_70172_ad"},
+			{ "viewerPosX", "field_78730_l" },
+			{ "viewerPosY", "field_78731_m" },
+			{ "viewerPosZ", "field_78728_n" },
+			{"boundingBox", "field_70121_D"},
+			{"minX", "field_72340_a"},
+			{"minY", "field_72338_b"},
+			{"minZ", "field_72339_c"},
+			{"maxX", "field_72336_d"},
+			{"maxY", "field_72337_e"},
+			{"maxZ", "field_72334_f"},
+			{"prevPosX", "field_70169_q"},
+			{"prevPosY", "field_70167_r"},
+			{"prevPosZ", "field_70166_s"},
+			{"isSneaking", "func_70093_af"},
+			{"rotationYawHead", "field_70759_as"},
+			{"onGround", "field_70122_E"},
+			{"getHeldItem", "func_70694_bm"},
+			{"item", "field_151002_e"},
+			{"getItem", "func_77973_b"},
+			{"typeOfHit", "field_72313_a"},
+			{"BLOCK", "BLOCK"},
+			{"ENTITY", "ENTITY"},
+			{ "objectMouseOver", "field_71476_x" },
+			{ "inWater", "field_70171_ac" },
+			{ "moveForward", "field_70701_bs" },
+			{ "moveStrafing", "field_70702_br" },
+			{ "timerSpeed", "field_74278_d" },
+			{ "inventory", "field_71071_by" },
+			{ "currentItem", "field_70461_c" },
+			{ "getStackInSlot", "func_70301_a" },
+			{ "metadata", "field_77991_e" },
+        };
+        break;
+    }
+    case LUNAR_1_7_10: {
+        g_Mappings = {
+           	{"net/minecraft/client/Minecraft", "net/minecraft/client/Minecraft"},
+			{"net/minecraft/client/entity/EntityClientPlayerMP", "net/minecraft/client/entity/EntityClientPlayerMP"},
+			{"net/minecraft/client/multiplayer/WorldClient", "net/minecraft/client/multiplayer/WorldClient"},
+			{"net/minecraft/client/gui/GuiScreen", "net/minecraft/client/gui/GuiScreen"},
+			{"net/minecraft/client/renderer/entity/RenderManager", "net/minecraft/client/renderer/entity/RenderManager"},
+			{ "net/minecraft/entity/Entity", "net/minecraft/entity/Entity" },
+			{"net/minecraft/client/renderer/entity/Render", "net/minecraft/client/renderer/entity/Render"},
+			{"net/minecraft/client/model/ModelBase", "net/minecraft/client/model/ModelBase"},
+			{"net/minecraft/client/renderer/ActiveRenderInfo", "net/minecraft/client/renderer/ActiveRenderInfo"},
+			{ "net/minecraft/util/IChatComponent", "net/minecraft/util/IChatComponent" },
+			{"net/minecraft/client/model/ModelRenderer", "net/minecraft/client/model/ModelRenderer"},
+			{"net/minecraft/util/Timer", "net/minecraft/util/Timer"},
+			{"net/minecraft/client/gui/Gui", "net/minecraft/client/gui/Gui"},
+			{"net/minecraft/client/gui/FontRenderer", "net/minecraft/client/gui/FontRenderer"},
+			{"net/minecraft/util/AxisAlignedBB", "net/minecraft/util/AxisAlignedBB"},
+			{"net/minecraft/client/gui/GuiChat", "net/minecraft/client/gui/GuiChat"},
+			{"net/minecraft/client/renderer/entity/RendererLivingEntity", "net/minecraft/client/renderer/entity/RendererLivingEntity"},
+			{ "net/minecraft/item/ItemStack", "net/minecraft/item/ItemStack" },
+			{ "net/minecraft/item/ItemSword", "net/minecraft/item/ItemSword" },
+			{ "net/minecraft/item/ItemAxe", "net/minecraft/item/ItemAxe" },
+			{ "net/minecraft/item/Item", "net/minecraft/item/Item" },
+			{ "net/minecraft/item/ItemBlock", "net/minecraft/item/ItemBlock" },
+			{"net/minecraft/util/MovingObjectPosition$MovingObjectType", "net/minecraft/util/MovingObjectPosition_MovingObjectType"},
+			{"net/minecraft/util/MovingObjectPosition", "net/minecraft/util/MovingObjectPosition"},
+			{"net/minecraft/client/gui/inventory/GuiInventory", "net/minecraft/client/gui/inventory/GuiInventory"},
+			{"net/minecraft/client/gui/GuiChat", "net/minecraft/client/gui/GuiChat"},
+			{"net/minecraft/entity/player/InventoryPlayer", "net/minecraft/entity/player/InventoryPlayer"},
+			{"net/minecraft/item/ItemEnderPearl", "net/minecraft/item/ItemEnderPearl"},
+			{ "net/minecraft/block/Block", "net/minecraft/block/Block" },
+			{"net/minecraft/client/settings/GameSettings", "net/minecraft/client/settings/GameSettings"},
+			{ "net/minecraft/client/settings/KeyBinding", "net/minecraft/client/settings/KeyBinding" },
+			{"net/minecraft/block/BlockAir", "net/minecraft/block/BlockAir"},
+			{ "keyBindSneak", "keyBindSneak" },
+			{ "pressed", "pressed" },
+			{"gameSettings", "gameSettings"},
+			{ "getBlock", "getBlock" },
+			{ "getIdFromBlock", "getIdFromBlock" },
+			{"theMinecraft", "theMinecraft"},
+			{"thePlayer", "thePlayer"},
+			{"theWorld", "theWorld"},
+			{"currentScreen", "currentScreen"},
+			{"renderManagerInstance", "instance" },
+			{"getEntityRenderObject", "getEntityRenderObject"},
+			{"mainModel", "mainModel"},
+			{"PROJECTION", "projection"},
+			{"MODELVIEW", "modelview"},
+			{"playerEntities", "playerEntities"},
+			{ "getDisplayName", "getFormattedCommandSenderName" },
+			{"getUnformattedTextForChat", "getUnformattedTextForChat"},
+			{"rotationPitch", "rotationPitch"},
+			{"rotationYaw", "rotationYaw"},
+			{"prevRotationYaw", "prevRotationYaw"},
+			{"prevRotationPitch", "prevRotationPitch"},
+			{"posX", "posX"},
+			{"posY", "posY"},
+			{"posZ", "posZ"},
+			{"motionX", "motionX"},
+			{"motionY", "motionY"},
+			{"motionZ", "motionZ"},
+			{"maxHurtResistantTime", "maxHurtResistantTime"},
+			{"hurtResistantTime", "hurtResistantTime"},
+			{"bipedHeadwear", "bipedHeadwear"},
+			{"bipedRightArm", "bipedRightArm"},
+			{"bipedLeftArm", "bipedLeftArm"},
+			{"bipedRightLeg", "bipedRightLeg"},
+			{"bipedLeftLeg", "bipedLeftLeg"},
+			{"rotateAngleX","rotateAngleX"},
+			{"rotateAngleY","rotateAngleY"},
+			{"rotateAngleZ","rotateAngleZ"},
+			{"prevRenderYawOffset", "prevRenderYawOffset"},
+			{"renderYawOffset", "renderYawOffset"},
+			{ "renderPartialTicks", "renderPartialTicks" },
+			{"lastTickPosX", "lastTickPosX"},
+			{"lastTickPosY", "lastTickPosY"},
+			{"lastTickPosZ", "lastTickPosZ"},
+			{"timer", "timer"},
+			{"displayWidth", "displayWidth"},
+			{"displayHeight", "displayHeight"},
+			{ "renderPosX", "renderPosX" },
+			{ "renderPosY", "renderPosY" },
+			{ "renderPosZ", "renderPosZ" },
+			{"drawRect", "drawRect"},
+			{"getStringWidth", "getStringWidth"},
+			{"drawString", "drawString"},
+			{"fontRendererObj", "fontRendererObj"},
+			{ "getHealth", "getHealth" },
+			{"setAlwaysRenderNameTag",  "setAlwaysRenderNameTag"},
+			{"isInvisible", "isInvisible"},
+			{"maxHurtResistantTime", "maxHurtResistantTime"},
+			{"hurtResistantTime", "hurtResistantTime"},
+			{ "viewerPosX", "viewerPosX" },
+			{ "viewerPosY", "viewerPosY" },
+			{ "viewerPosZ", "viewerPosZ" },
+			{"boundingBox", "boundingBox"},
+			{"minX", "minX"},
+			{"minY", "minY"},
+			{"minZ", "minZ"},
+			{"maxX", "maxX"},
+			{"maxY", "maxY"},
+			{"maxZ", "maxZ"},
+			{"prevPosX", "prevPosX"},
+			{"prevPosY", "prevPosY"},
+			{"prevPosZ", "prevPosZ"},
+			{"isSneaking", "isSneaking"},
+			{"rotationYawHead", "rotationYawHead"},
+			{"onGround", "onGround"},
+			{"getHeldItem", "getHeldItem"},
+			{"item", "theItem"},
+			{"getItem", "getItem"},
+			{"typeOfHit", "typeOfHit"},
+			{"BLOCK", "BLOCK"},
+			{"ENTITY", "ENTITY"},
+			{ "objectMouseOver", "objectMouseOver" },
+			{ "inWater", "inWater" },
+			{ "moveForward", "moveForward" },
+			{ "moveStrafing", "moveStrafing" },
+			{ "timerSpeed", "timerSpeed" },
+			{ "inventory", "inventory" },
+			{ "currentItem", "currentItem" },
+			{ "getStackInSlot", "getStackInSlot" },
+			{ "metadata", "metadata" },
+        };
+        break;
+    }
+    case LUNAR_1_8: {
+        g_Mappings = {
+          	{"net/minecraft/client/Minecraft", "net/minecraft/client/Minecraft"},
+			{"net/minecraft/client/entity/EntityClientPlayerMP", "net/minecraft/client/entity/EntityPlayerSP"},
+			{"net/minecraft/client/multiplayer/WorldClient", "net/minecraft/client/multiplayer/WorldClient"},
+			{"net/minecraft/client/gui/GuiScreen", "net/minecraft/client/gui/GuiScreen"},
+			{"net/minecraft/client/renderer/entity/RenderManager", "net/minecraft/client/renderer/entity/RenderManager"},
+			{ "net/minecraft/entity/Entity", "net/minecraft/entity/Entity" },
+			{"net/minecraft/client/renderer/entity/Render", "net/minecraft/client/renderer/entity/Render"},
+			{"net/minecraft/client/model/ModelBase", "net/minecraft/client/model/ModelBase"},
+			{"net/minecraft/client/renderer/ActiveRenderInfo", "net/minecraft/client/renderer/ActiveRenderInfo"},
+			{ "net/minecraft/util/IChatComponent", "net/minecraft/util/IChatComponent" },
+			{"net/minecraft/client/model/ModelRenderer", "net/minecraft/client/model/ModelRenderer"},
+			{"net/minecraft/util/Timer", "net/minecraft/util/Timer"},
+			{"net/minecraft/client/gui/Gui", "net/minecraft/client/gui/Gui"},
+			{"net/minecraft/client/gui/FontRenderer", "net/minecraft/client/gui/FontRenderer"},
+			{"net/minecraft/util/AxisAlignedBB", "net/minecraft/util/AxisAlignedBB"},
+			{"net/minecraft/client/gui/GuiChat", "net/minecraft/client/gui/GuiChat"},
+			{"net/minecraft/client/renderer/entity/RendererLivingEntity", "net/minecraft/client/renderer/entity/RendererLivingEntity"},
+			{ "net/minecraft/item/ItemStack", "net/minecraft/item/ItemStack" },
+			{ "net/minecraft/item/ItemSword", "net/minecraft/item/ItemSword" },
+			{ "net/minecraft/item/ItemAxe", "net/minecraft/item/ItemAxe" },
+			{ "net/minecraft/item/Item", "net/minecraft/item/Item" },
+			{ "net/minecraft/item/ItemBlock", "net/minecraft/item/ItemBlock" },
+			{"net/minecraft/util/MovingObjectPosition$MovingObjectType", "net/minecraft/util/MovingObjectPosition$MovingObjectType"},
+			{"net/minecraft/util/MovingObjectPosition", "net/minecraft/util/MovingObjectPosition"},
+			{"net/minecraft/client/gui/inventory/GuiInventory", "net/minecraft/client/gui/inventory/GuiInventory"},
+			{"net/minecraft/client/gui/GuiChat", "net/minecraft/client/gui/GuiChat"},
+			{"net/minecraft/entity/player/InventoryPlayer", "net/minecraft/entity/player/InventoryPlayer"},
+			{"net/minecraft/item/ItemEnderPearl", "net/minecraft/item/ItemEnderPearl"},
+			{ "net/minecraft/block/Block", "net/minecraft/block/Block" },
+			{ "net/minecraft/block/state/IBlockState", "net/minecraft/block/state/IBlockState" },
+			{ "net/minecraft/util/BlockPos", "net/minecraft/util/BlockPos"},
+			{"net/minecraft/client/settings/GameSettings", "net/minecraft/client/settings/GameSettings"},
+			{ "net/minecraft/client/settings/KeyBinding", "net/minecraft/client/settings/KeyBinding" },
+			{"net/minecraft/block/BlockAir", "net/minecraft/block/BlockAir"},
+			{ "keyBindSneak", "keyBindSneak" },
+			{ "pressed", "pressed" },
+			{"gameSettings", "gameSettings"},
+			{ "getBlockState", "getBlockState" },
+			{ "getBlock", "getBlock" },
+			{ "getIdFromBlock", "getIdFromBlock" },
+			{"theMinecraft", "theMinecraft"},
+			{"thePlayer", "thePlayer"},
+			{"theWorld", "theWorld"},
+			{"currentScreen", "currentScreen"},
+			{"getRenderManager", "getRenderManager"},
+			{"getEntityRenderObject", "getEntityRenderObject"},
+			{"mainModel", "mainModel"},
+			{"PROJECTION", "PROJECTION"},
+			{"MODELVIEW", "MODELVIEW"},
+			{"playerEntities", "playerEntities"},
+			{"playerEntities", "playerEntities"},
+			{ "getDisplayName", "getDisplayName" },
+			{"getUnformattedTextForChat", "getUnformattedTextForChat"},
+			{"rotationPitch", "rotationPitch"},
+			{"rotationYaw", "rotationYaw"},
+			{"prevRotationYaw", "prevRotationYaw"},
+			{"prevRotationPitch", "prevRotationPitch"},
+			{"posX", "posX"},
+			{"posY", "posY"},
+			{"posZ", "posZ"},
+			{"motionX", "motionX"},
+			{"motionY", "motionY"},
+			{"motionZ", "motionZ"},
+			{"maxHurtResistantTime", "maxHurtResistantTime"},
+			{"hurtResistantTime", "hurtResistantTime"},
+			{"bipedHeadwear", "bipedHeadwear"},
+			{"bipedRightArm", "bipedRightArm"},
+			{"bipedLeftArm", "bipedLeftArm"},
+			{"bipedRightLeg", "bipedRightLeg"},
+			{"bipedLeftLeg", "bipedLeftLeg"},
+			{"rotateAngleX","rotateAngleX"},
+			{"rotateAngleY","rotateAngleY"},
+			{"rotateAngleZ","rotateAngleZ"},
+			{"prevRenderYawOffset", "prevRenderYawOffset"},
+			{"renderYawOffset", "renderYawOffset"},
+			{ "renderPartialTicks", "renderPartialTicks" },
+			{"lastTickPosX", "lastTickPosX"},
+			{"lastTickPosY", "lastTickPosY"},
+			{"lastTickPosZ", "lastTickPosZ"},
+			{"timer", "timer"},
+			{"displayWidth", "displayWidth"},
+			{"displayHeight", "displayHeight"},
+			{ "renderPosX", "renderPosX" },
+			{ "renderPosY", "renderPosY" },
+			{ "renderPosZ", "renderPosZ" },
+			{"drawRect", "drawRect"},
+			{"getStringWidth", "getStringWidth"},
+			{"drawString", "drawString"},
+			{"fontRendererObj", "fontRendererObj"},
+			{ "getHealth", "getHealth" },
+			{"setAlwaysRenderNameTag",  "setAlwaysRenderNameTag"},
+			{"isInvisible", "isInvisible"},
+			{"maxHurtResistantTime", "maxHurtResistantTime"},
+			{"hurtResistantTime", "hurtResistantTime"},
+			{ "viewerPosX", "viewerPosX" },
+			{ "viewerPosY", "viewerPosY" },
+			{ "viewerPosZ", "viewerPosZ" },
+			{"boundingBox", "boundingBox"},
+			{"minX", "minX"},
+			{"minY", "minY"},
+			{"minZ", "minZ"},
+			{"maxX", "maxX"},
+			{"maxY", "maxY"},
+			{"maxZ", "maxZ"},
+			{"prevPosX", "prevPosX"},
+			{"prevPosY", "prevPosY"},
+			{"prevPosZ", "prevPosZ"},
+			{"isSneaking", "isSneaking"},
+			{"rotationYawHead", "rotationYawHead"},
+			{"onGround", "onGround"},
+			{"getHeldItem", "getHeldItem"},
+			{"item", "item"},
+			{"getItem", "getItem"},
+			{"typeOfHit", "typeOfHit"},
+			{"BLOCK", "BLOCK"},
+			{"ENTITY", "ENTITY"},
+			{ "objectMouseOver", "objectMouseOver" },
+			{ "inWater", "inWater" },
+			{ "moveForward", "moveForward" },
+			{ "moveStrafing", "moveStrafing" },
+			{ "timerSpeed", "timerSpeed" },
+			{ "inventory", "inventory" },
+			{ "currentItem", "currentItem" },
+			{ "getStackInSlot", "getStackInSlot" },
+			{ "metadata", "itemDamage" },
+        };
+        break;
+    }
+    default:
+        // leave g_Mappings empty
+        break;
+    }
 }
 
-const char* Mapping::getClassName(const char* key) {
-    CM* cm = getClass(key);
-    return cm ? cm->name : nullptr;
-}
+/*
+    * type:
+    * 1: classic class/field
+    * 2: class type (L...;)
+    * 3: method class type (()L...;)
+*/
+std::string Mapping::Get(const char* mapping, int type)
+{
+    if (!mapping)
+        return std::string("");
 
-void Mapping::setup() {
-    std::lock_guard<std::mutex> lock(lookup_mutex);
-    
-    static bool initialized = false;
-    if (initialized) {
-        std::cout << "Mapping already initialized, skipping setup" << std::endl;
-        return;
-    }
-    
-    // Clear existing mappings - shared_ptr handles cleanup automatically
-    lookup.clear();
+    auto it = g_Mappings.find(mapping);
+    if (it == g_Mappings.end())
+        return std::string("");
 
-    try {
-        // Base JVM classes
-        auto m = make("List", "java.util.List");
-        if (m) {
-            method(m, "get", "(I)Ljava/lang/Object;", false);
-            method(m, "toArray", "()[Ljava/lang/Object;", false);
-            method(m, "size", "()I", false);
-        }
+    const std::string_view mapped = it->second;
 
-        m = make("Set", "java.util.Set");
-        if (m) {
-            method(m, "toArray", "()[Ljava/lang/Object;", false);
-            method(m, "size", "()I", false);
-        }
-
-        m = make("System", "java.lang.System");
-        if (m) {
-            field(m, "out", "Ljava/io/PrintStream;", true);
-        }
-
-        m = make("PrintStream", "java.io.PrintStream");
-        if (m) {
-            method(m, "println", "(Ljava/lang/String;)V", false);
-        }
-
-        m = make("Mouse", "org.lwjgl.input.Mouse");
-        if (m) {
-            method(m, "isButtonDown", "(I)Z", true);
-        }
-
-        // Minecraft classes
-        m = make("Entity", "net.minecraft.entity.Entity");
-        if (m) {
-            field(m, "x", "field_70165_t", "D", false);
-            field(m, "lastTickPosX", "field_70142_S", "D", false);
-            field(m, "y", "field_70163_u", "D", false);
-            field(m, "z", "field_70161_v", "D", false);
-            field(m, "lastTickPosZ", "field_70136_U", "D", false);
-            field(m, "ridingEntity", "field_70154_o", "Lnet/minecraft/entity/Entity;", false);
-            method(m, "getEyeHeight", "func_70047_e", "()F", false);
-            method(m, "getID", "func_145782_y", "()I", false);
-            method(m, "getName", "func_70005_c_", "()Ljava/lang/String;", false);
-            method(m, "rayTrace", "func_174822_a", "(FD)Lnet/minecraft/util/math/RayTraceResult;", false);
-            method(m, "getPositionEyes", "func_174824_e", "(F)Lnet/minecraft/util/Vec3;", false);
-            method(m, "getLook", "func_70676_i", "(F)Lnet/minecraft/util/Vec3;", false);
-            method(m, "getEntityBoundingBox", "func_174813_aQ", "()Lnet/minecraft/util/AxisAlignedBB;", false);
-            method(m, "getCollisionBorderSize", "func_70111_Y", "()F", false);
-            method(m, "canBeCollidedWith", "func_70067_L", "()Z", false);
-            method(m, "canRiderInteract", "canRiderInteract", "()Z", false);
-        }
-
-        m = make("WorldClient", "net.minecraft.client.multiplayer.WorldClient");
-        if (m) {
-            field(m, "entities", "field_72996_f", "Ljava/util/List;", false);
-            field(m, "players", "field_73010_i", "Ljava/util/List;", false);
-            method(m, "setTime", "func_72877_b", "(J)V", false);
-            method(m, "getEntitiesWithinAABBExcluding", "func_72839_b",
-                   "(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/AxisAlignedBB;)Ljava/util/List;", false);
-        }
-
-        m = make("PlayerControllerMP", "net.minecraft.client.multiplayer.PlayerControllerMP");
-
-        m = make("PlayerSP", "net.minecraft.client.entity.EntityPlayerSP");
-        if (m) {
-            field(m, "x", "field_70165_t", "D", false);
-            field(m, "y", "field_70163_u", "D", false);
-            field(m, "z", "field_70161_v", "D", false);
-            field(m, "yaw", "field_70177_z", "F", false);
-            field(m, "pitch", "field_70125_A", "F", false);
-            field(m, "width", "field_70130_N", "F", false);
-            field(m, "height", "field_70131_O", "F", false);
-            field(m, "motionX", "field_70159_w", "D", false);
-            field(m, "motionY", "field_70181_x", "D", false);
-            field(m, "motionZ", "field_70179_y", "D", false);
-            field(m, "hurtTime", "field_70737_aN", "I", false);
-            field(m, "maxHurtTime", "field_70738_aO", "I", false);
-            method(m, "setPosition", "func_70107_b", "(DDD)V", false);
-            method(m, "setVelocity", "func_70016_h", "(DDD)V", false);
-            method(m, "getPositionVector", "func_174791_d", "()Lnet/minecraft/util/Vec3;", false);
-            method(m, "getLook", "func_70676_i", "(F)Lnet/minecraft/util/Vec3;", false);
-            method(m, "getID", "func_145782_y", "()I", false);
-            method(m, "getEyeHeight", "func_70047_e", "()F", false);
-            method(m, "getName", "func_70005_c_", "()Ljava/lang/String;", false);
-            method(m, "setSprint", "func_70031_b", "(Z)V", false);
-            method(m, "getDisplayName", "func_145748_c_", "()Lnet/minecraft/util/IChatComponent;", false);
-        }
-
-        m = make("KeyBinding", "net.minecraft.client.settings.KeyBinding");
-        if (m) {
-            method(m, "setKeyBindState", "func_74510_a", "(IZ)V", true);
-            method(m, "onTick", "func_74507_a", "(I)V", true);
-            method(m, "getKeyCode", "func_151463_i", "()I", false);
-        }
-
-        m = make("GameSettings", "net.minecraft.client.settings.GameSettings");
-        if (m) {
-            field(m, "keyBindAttack", "field_74312_F", "Lnet/minecraft/client/settings/KeyBinding;", false);
-            field(m, "keyBindBack", "field_74368_y", "Lnet/minecraft/client/settings/KeyBinding;", false);
-        }
-
-        m = make("Minecraft", "net.minecraft.client.Minecraft");
-        if (m) {
-            field(m, "player", "field_71439_g", "Lnet/minecraft/client/entity/EntityPlayerSP;", false);
-            field(m, "world", "field_71441_e", "Lnet/minecraft/client/multiplayer/WorldClient;", false);
-            field(m, "playerController", "field_71442_b", "Lnet/minecraft/client/multiplayer/PlayerControllerMP;", false);
-            field(m, "gameSettings", "field_71474_y", "Lnet/minecraft/client/settings/GameSettings;", false);
-            field(m, "inGameHasFocus", "field_71415_G", "Z", false);
-            field(m, "pointedEntity", "field_147125_j", "Lnet/minecraft/entity/Entity;", false);
-            field(m, "objectMouseOver", "field_71476_x", "Lnet/minecraft/util/math/RayTraceResult;", false);
-            field(m, "timer", "field_71428_T", "Lnet/minecraft/util/Timer;", false);
-            field(m, "rightClickDelayTimer", "field_71467_ac", "I", false);
-            field(m, "entityRenderer", "field_71460_t", "Lnet/minecraft/client/renderer/EntityRenderer;", false);
-            field(m, "leftClickMouse", "field_71429_W", "I", false);
-            method(m, "getRenderViewEntity", "func_175606_aa", "()Lnet/minecraft/entity/Entity;", false);
-            method(m, "getMinecraft", "func_71410_x", "()Lnet/minecraft/client/Minecraft;", true);
-        }
-
-        m = make("EntityLivingBase", "net.minecraft.entity.EntityLivingBase");
-        if (m) {
-            field(m, "x", "field_70165_t", "D", false);
-            field(m, "lastTickPosX", "field_70142_S", "D", false);
-            field(m, "y", "field_70163_u", "D", false);
-            field(m, "z", "field_70161_v", "D", false);
-            field(m, "lastTickPosZ", "field_70136_U", "D", false);
-            method(m, "getEyeHeight", "func_70047_e", "()F", false);
-            method(m, "getID", "func_145782_y", "()I", false);
-            method(m, "getName", "func_70005_c_", "()Ljava/lang/String;", false);
-        }
-
-        m = make("EntityPlayer", "net.minecraft.entity.player.EntityPlayer");
-        if (m) {
-            field(m, "x", "field_70165_t", "D", false);
-            field(m, "lastTickPosX", "field_70142_S", "D", false);
-            field(m, "y", "field_70163_u", "D", false);
-            field(m, "z", "field_70161_v", "D", false);
-            field(m, "lastTickPosZ", "field_70136_U", "D", false);
-            field(m, "yaw", "field_70177_z", "F", false);
-            field(m, "pitch", "field_70125_A", "F", false);
-            method(m, "getEyeHeight", "func_70047_e", "()F", false);
-            method(m, "getID", "func_145782_y", "()I", false);
-            method(m, "getName", "func_70005_c_", "()Ljava/lang/String;", false);
-            method(m, "setSprint", "func_70031_b", "(Z)V", false);
-            method(m, "getDisplayName", "func_145748_c_", "()Lnet/minecraft/util/IChatComponent;", false);
-            method(m, "getEntityBoundingBox", "func_174813_aQ", "()Lnet/minecraft/util/AxisAlignedBB;", false);
-        }
-
-        m = make("Vec3", "net.minecraft.util.Vec3");
-        if (m) {
-            field(m, "xCoord", "field_72450_a", "D", false);
-            field(m, "yCoord", "field_72448_b", "D", false);
-            field(m, "zCoord", "field_72449_c", "D", false);
-            method(m, "addVector", "func_72441_c", "(DDD)Lnet/minecraft/util/Vec3;", false);
-            method(m, "distanceTo", "func_72438_d", "(Lnet/minecraft/util/Vec3;)D", false);
-        }
-
-        m = make("AxisAlignedBB", "net.minecraft.util.AxisAlignedBB");
-        if (m) {
-            method(m, "addCoord", "func_72321_a", "(DDD)Lnet/minecraft/util/AxisAlignedBB;", false);
-            method(m, "expand", "func_72314_b", "(DDD)Lnet/minecraft/util/AxisAlignedBB;", false);
-            method(m, "calculateIntercept", "func_72327_a",
-                   "(Lnet/minecraft/util/Vec3;Lnet/minecraft/util/Vec3;)Lnet/minecraft/util/MovingObjectPosition;", false);
-            method(m, "isVecInside", "func_72318_a", "(Lnet/minecraft/util/Vec3;)Z", false);
-            field(m, "maxX", "field_72336_d", "D", false);
-            field(m, "maxY", "field_72337_e", "D", false);
-            field(m, "maxZ", "field_72334_f", "D", false);
-            field(m, "minX", "field_72340_a", "D", false);
-            field(m, "minY", "field_72338_b", "D", false);
-            field(m, "minZ", "field_72339_c", "D", false);
-        }
-
-        m = make("MovingObjectPosition", "net.minecraft.util.MovingObjectPosition");
-        if (m) {
-            field(m, "hitVec", "field_72307_f", "Lnet/minecraft/util/Vec3;", false);
-            field(m, "typeOfHit", "field_72313_a",
-                  "Lnet/minecraft/util/MovingObjectPosition$MovingObjectType;", false);
-            field(m, "blockPos", "field_178783_e", "Lnet/minecraft/util/BlockPos;", false);
-            field(m, "sideHit", "field_178784_b", "Lnet/minecraft/util/EnumFacing;", false);
-            field(m, "entityHit", "field_72308_g", "Lnet/minecraft/entity/Entity;", false);
-        }
-
-        m = make("Timer", "net.minecraft.util.Timer");
-        if (m) {
-            field(m, "partialTicks", "field_74281_c", "F", false);
-        }
-
-        m = make("EntityRenderer", "net.minecraft.client.renderer.EntityRenderer");
-        if (m) {
-            field(m, "pointedEntity", "field_78528_u", "Lnet/minecraft/entity/Entity;", false);
-        }
-
-        m = make("InventoryPlayer", "net.minecraft.entity.player.InventoryPlayer");
-        if (m) {
-            field(m, "currentItem", "field_70461_c", "I", false);
-            field(m, "mainInventory", "field_70462_a", "[Lnet/minecraft/item/ItemStack;", false);
-            method(m, "getCurrentItem", "func_70448_g", "()Lnet/minecraft/item/ItemStack;", false);
-        }
-
-        m = make("ItemStack", "net.minecraft.item.ItemStack");
-        if (m) {
-            field(m, "stackSize", "field_77994_a", "I", false);
-            field(m, "item", "field_151002_e", "Lnet/minecraft/item/Item;", false);
-            method(m, "getDisplayName", "func_82833_r", "()Ljava/lang/String;", false);
-        }
-
-        m = make("Item", "net.minecraft.item.Item");
-        if (m) {
-            method(m, "getUnlocalizedName", "func_77658_a", "()Ljava/lang/String;", false);
-        }
-        
-        std::cout << "=== Loaded Classes ===" << std::endl;
-        for (const auto &entry : lookup) {
-            std::cout << " - " << entry.first << std::endl;
-        }
-
-        for (const auto &entry : lookup) {
-            std::cout << "[Mapping] " << entry.first << std::endl;
-        }
-        
-        initialized = true;
-        std::cout << "Mapping setup completed successfully" << std::endl;
-        
-    } catch (const std::exception& e) {
-        std::cerr << "[Mapping FATAL ERROR] Exception during setup: " << e.what() << std::endl;
-        lookup.clear();
-        initialized = false;
-        throw;
-    }
-}
-
-void Mapping::field(CM *cm, const char *name, const char *desc, bool isStatic) {
-    field(cm, name, name, desc, isStatic);
-}
-
-void Mapping::method(CM *cm, const char *name, const char *desc, bool isStatic) {
-    method(cm, name, name, desc, isStatic);
-}
-
-void Mapping::field(CM *cm, const char *keyName, const char *obName, const char *desc, bool isStatic) {
-    if (!cm || !keyName || !obName || !desc) {
-        std::cerr << "[Mapping ERROR] Null parameter when adding field" << std::endl;
-        return;
-    }
-    
-    std::cout << "  Mapping " << obName << " to " << keyName << std::endl;
-    
-    // Create Mem object directly in the map - avoid temporary objects
-    cm->fields.emplace(std::string(keyName), Mem(obName, desc, isStatic));
-}
-
-void Mapping::method(CM *cm, const char *keyName, const char *obName, const char *desc, bool isStatic) {
-    if (!cm || !keyName || !obName || !desc) {
-        std::cerr << "[Mapping ERROR] Null parameter when adding method" << std::endl;
-        return;
-    }
-    
-    std::cout << "  Mapping " << obName << desc << " to " << keyName << std::endl;
-    
-    // Create Mem object directly in the map - avoid temporary objects
-    cm->methods.emplace(std::string(keyName), Mem(obName, desc, isStatic));
-}
-
-CM *Mapping::make(const char *key, const char *name) {
-    if (!key || !name) {
-        std::cerr << "[Mapping ERROR] Null parameters to make()" << std::endl;
-        return nullptr;
-    }
-    
-    std::string keyStr(key);
-    
-    // Check if key already exists
-    auto it = lookup.find(keyStr);
-    if (it != lookup.end()) {
-        std::cerr << "[Mapping WARNING] Class " << key << " already exists, returning existing..." << std::endl;
-        return it->second.get();
-    }
-    
-    try {
-        auto cm = std::make_shared<CM>(name);
-        std::cout << "Mapping " << name << " to " << key << std::endl;
-        
-        auto result = lookup.emplace(keyStr, cm);
-        if (result.second) {
-            return cm.get();
-        } else {
-            std::cerr << "[Mapping ERROR] Failed to insert " << key << " into lookup" << std::endl;
-            return nullptr;
-        }
-    } catch (const std::exception& e) {
-        std::cerr << "[Mapping ERROR] Failed to create CM for " << key << ": " << e.what() << std::endl;
-        return nullptr;
+    switch (type)
+    {
+    case 1:
+        return std::string(mapped);
+    case 2:
+        return "L" + std::string(mapped) + ";";
+    case 3:
+        return "()L" + std::string(mapped) + ";";
+    default:
+        return std::string(mapped);
     }
 }
