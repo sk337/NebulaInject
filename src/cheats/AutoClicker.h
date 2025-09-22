@@ -1,81 +1,99 @@
 //
-// AutoClicker.h — improved version
+// AutoClicker.h — improved, Display cached, burst worker, no sword checks
 //
 #ifndef PHANTOM_AUTOCLICKER_H
 #define PHANTOM_AUTOCLICKER_H
+
 #include "../Phantom.h"
 #include "../utils/MSTimer.h"
 #include "Cheat.h"
+#include <memory>
+#include <atomic>
+#include <mutex>
+#include <thread>
+#include <condition_variable>
+#include <vector>
+#include <X11/Xlib.h>
 
 class AutoClicker : public Cheat {
 public:
-  explicit AutoClicker();
-  ~AutoClicker();
+    explicit AutoClicker();
+    ~AutoClicker();
 
-  // Override base class methods
-  virtual void run(Minecraft *mc) override;
-  virtual void reset(Minecraft *mc) override;
-  virtual void renderSettings() override;
+    // Cheat overrides
+    void run(Minecraft *mc) override;
+    void reset(Minecraft *mc) override;
+    void renderSettings() override;
 
 private:
-  void updateValues();
+    // Initialization / cleanup
+    void initializeDisplay();
+    void initializeUInput();
+    void cleanup();
 
-  // Timers
-  MSTimer *clickTimer;
-  MSTimer *eventTimer;
-  MSTimer *releaseTimer;
-  MSTimer *burstTimer;
-  bool isHolding;
-  bool shouldClick;
+    // Click logic
+    void updateValues();
+    void performClickImmediate(int holdMs); // performs a click synchronously (used by worker)
+    void performClick(Minecraft *mc);       // non-blocking: spawns a thread for a single click
 
-  // Core options
-  float cps; // target clicks per second
-  bool onlyInGame;
-  bool mineBlocks; // only click when pointing at a block (or any hit if false)
-  bool onlySword;  // only click while holding a sword
+    // Burst worker
+    struct BurstRequest { int clicks; int spacingMs; int holdMs; };
+    void burstWorkerLoop();
+    void requestBurst(int clicks, int spacingMs, int holdMs);
 
-  // Advanced/randomization
-  float holdLength;       // fraction of interval to hold (0..0.99)
-  float holdLengthRandom; // +/- variance multiplier for hold length (0..0.5)
-  float jitterMs;    // additional small random ms added to each click delay
-  bool randomizeCps; // allows per-click small CPS variance
-  float cpsVariance; // variance fraction of CPS (eg 0.05 => +/-5%)
+    // Timers
+    std::unique_ptr<MSTimer> clickTimer;
+    std::unique_ptr<MSTimer> eventTimer;
+    std::unique_ptr<MSTimer> releaseTimer;
+    std::unique_ptr<MSTimer> burstTimer;
 
-  // Wayland/uinput support
-  int uinput_fd;
+    // State (atomic where accessed across threads)
+    std::atomic<bool> isHolding{false};
+    std::atomic<bool> shouldClick{false};
+    std::atomic<bool> isSpiking{false};
+    std::atomic<bool> isDropping{false};
 
-  // State tracking members
-  bool shouldRelease;
-  bool keyPressed;
-  int releaseDelayMs;
-  int burstCount;
+    // Display caching
+    Display *xDisplay{nullptr};
 
-  // Helper methods
-  void initializeUInput();
-  void cleanup();
-  void sendKeyEvent(int key, int value);
-  void handleKeyRelease(Minecraft *mc);
-  void handleBurstMode(Minecraft *mc);
-  void performClick(Minecraft *mc);
+    // Burst threading
+    std::thread burstThread;
+    std::mutex burstMutex;
+    std::condition_variable burstCv;
+    std::vector<BurstRequest> burstQueue;
+    std::atomic<bool> burstWorkerRunning{false};
 
-  // Burst mode
-  bool burstMode;
-  int burstClicks;  // clicks per burst
-  int burstDelayMs; // delay between bursts
+    // Core options
+    float cps; // target clicks per second
+    bool onlyInGame;
+    bool mineBlocks;
 
-  // Timing / state
-  int nextDelay;  // computed ms until next click
-  int eventDelay; // base ms between event changes
-  int nextEventDelay;
-  float dropChance;
-  float spikeChance;
-  float spikeMultiplier; // how much to multiply during spike
-  bool isSpiking;
-  bool isDropping;
-  bool showAdvanced;
+    // Humanization / randomness
+    float holdLength;       // fraction of interval to hold (0..0.99)
+    float holdLengthRandom; // +/- variance multiplier for hold length (0..0.5)
+    float jitterMs;
+    bool randomizeCps;
+    float cpsVariance;
 
-  // internal
-  bool pendingBurst; // currently executing a burst
+    // Burst mode
+    bool burstMode;
+    int burstClicks;
+    int burstDelayMs;
+
+    // Events
+    int nextDelay;  // ms to next click
+    int eventDelay;
+    int nextEventDelay;
+    float dropChance;
+    float spikeChance;
+    float spikeMultiplier;
+
+    // Misc
+    bool showAdvanced;
+    int uinput_fd;
+    bool shouldRelease;
+    bool keyPressed;
+    int releaseDelayMs;
 };
 
 #endif // PHANTOM_AUTOCLICKER_H

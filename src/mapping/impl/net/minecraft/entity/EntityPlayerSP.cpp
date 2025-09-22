@@ -104,6 +104,15 @@ jdouble EntityPlayerSP::getMotionZ() {
   return getDouble(mc->getPlayer(), fdMotionZ);
 }
 
+
+void EntityPlayerSP::swingItem() {
+    jclass cls = phantom->getEnv()->GetObjectClass(mc->getPlayer());
+    jmethodID mid = phantom->getEnv()->GetMethodID(cls, "swingItem", "()V");
+    if (mid) {
+        phantom->getEnv()->CallVoidMethod(mc->getPlayer(), mid);
+    }
+}
+
 jdouble EntityPlayerSP::getHorizontalSpeed() {
   double x = getMotionX();
   double z = getMotionZ();

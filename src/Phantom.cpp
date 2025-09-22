@@ -1,130 +1,123 @@
 //
-// Created by somepineaple on 1/25/22. Some Modules added by Kirby!
+// Created by somepineaple on 1/25/22.
 //
 
 #include "Phantom.h"
-
-#include <thread>
+#include <fstream>
 #include <net/minecraft/client/Minecraft.h>
 #include <net/minecraft/client/multiplayer/WorldClient.h>
 #include <net/minecraft/entity/EntityPlayerSP.h>
+#include <string>
+#include <thread>
 /* #include <net/minecraft/client/multiplayer/PlayerControllerMP.h> */
-
+#include "cheats/AutoClicker.h"
 #include "ui/PhantomWindow.h"
+#include <algorithm>
+#include <cctype>
+#include <filesystem>
+#include <functional>
+#include <iostream>
+#include <set>
+#include <sstream>
+#include <unordered_map>
 
-
+#include "cheats/AutoSprint.h"
+#include "cheats/Clip.h"
+#include "cheats/ESP.h"
 #include "cheats/FastPlace.h"
 #include "cheats/NoHitDelay.h"
-#include "cheats/AutoSprint.h"
-#include "cheats/Velocity.h"
 #include "cheats/Reach.h"
-#include "cheats/ESP.h"
-#include "cheats/AutoClicker.h"
+#include "cheats/ReachInput.h"
 #include "cheats/STap.h"
-#include "cheats/Clip.h"
+#include "cheats/Velocity.h"
 #include "ui/KeyManager.h"
 
 Phantom::Phantom() {
-    running = false;
-    jvm = nullptr;
-    env = nullptr;
+  running = false;
+  jvm = nullptr;
+  env = nullptr;
 
-    jsize count;
-    if (JNI_GetCreatedJavaVMs(&jvm, 1, &count) != JNI_OK || count == 0)
-        return;
+  jsize count;
+  if (JNI_GetCreatedJavaVMs(&jvm, 1, &count) != JNI_OK || count == 0)
+    return;
 
-    jint res = jvm->GetEnv((void **)&env, JNI_VERSION_1_6);
-    if (res == JNI_EDETACHED)
-        res = jvm->AttachCurrentThread((void **)&env, nullptr);
-    if (res != JNI_OK)
-        return;
+  jint res = jvm->GetEnv((void **)&env, JNI_VERSION_1_8);
+  if (res == JNI_EDETACHED)
+    res = jvm->AttachCurrentThread((void **)&env, nullptr);
+  if (res != JNI_OK)
+    return;
 
-    Mapping::setup();
+  Mapping::setup();
 
- 
-    cheats.push_back(new FastPlace());
-	cheats.push_back(new AutoSprint());
-	cheats.push_back(new NoHitDelay());
-	cheats.push_back(new Velocity(this)); //actually works really good
-	cheats.push_back(new Reach(this)); //honestly idk if this works
-	cheats.push_back(new ESP(this)); // may or may not crash ur game
-	cheats.push_back(new STap(this)); // it was native
-	cheats.push_back(new Clip(this));
-	cheats.push_back(new AutoClicker()); //works fine
-    
+  cheats.push_back(new AutoClicker());
+  cheats.push_back(new ESP(this));
+  cheats.push_back(new AutoSprint());
+  cheats.push_back(new NoHitDelay());
+
+  cheats.push_back(new Velocity(this));
+  Reach *reachCheat = new Reach(this);
+  cheats.push_back(reachCheat);
+  cheats.push_back(new ReachInput(reachCheat));
+  cheats.push_back(new FastPlace());
+
+  cheats.push_back(new STap(this));
 }
 
 void Phantom::runClient() {
+  running = true;
 
-    running = true;
 
-    // Get minecraft instance
-    auto *mc = new Minecraft(this);
+  auto *mc = new Minecraft(this);
+  auto *window = new NebulaWindow(700, 500, "Phantom");
+  window->setup();
+  auto *keyManager = new KeyManager();
 
-    auto *window = new NebulaWindow(700, 500, "Phantom");
-    window->setup();
+  while (running) {
+    EntityPlayerSP player = mc->getPlayerContainer();
+    WorldClient world = mc->getWorldContainer();
+    if (!player.getEntityPlayerSP() || !world.getWorld()) {
+      window->update(cheats, running, false);
 
-    auto *keyManager = new KeyManager();
-
-    while (running) {
-        // This is in the loop so that the instances are current. IE, joining a new world not trying to reference the old one.
-        EntityPlayerSP player = mc->getPlayerContainer();
-        WorldClient world = mc->getWorldContainer();
-        /* PlayerControllerMP playerController = mc->getPlayerControllerMPContainer(); */
-        // Ensure the player and world are not null (IE, check if in-game)
-        if (player.getEntityPlayerSP() == nullptr || world.getWorld() == nullptr) {
-            window->update(cheats, running, false);
-            continue;
-        }
-
-        // I don't know exactly how much time this takes, but I think calling it in a different thread upped my FPS
-        std::thread(callUpdateKeys, keyManager, this).detach();
-        for (Cheat *cheat : cheats) {
-            if (cheat->enabled)
-                cheat->run(mc);
-            else if(!cheat->enabled)
-                cheat->reset(mc);
-        }
-
-        window->update(cheats, running, true);
+      continue;
     }
 
-    window->destruct();
-    jvm->DetachCurrentThread();
+    std::thread(callUpdateKeys, keyManager, this).detach();
+    for (Cheat *cheat : cheats) {
+      if (cheat->enabled)
+        cheat->run(mc);
+      else
+        cheat->reset(mc);
+    }
+    window->update(cheats, running, true);
+  }
 
-    delete mc;
-    delete window;
-    delete keyManager;
+  window->destruct();
+  jvm->DetachCurrentThread();
+  delete mc;
+  delete window;
+  delete keyManager;
 }
 
 void Phantom::onKey(int key) {
-    for (Cheat *cheat : cheats) {
-        if (cheat->binding) {
-            cheat->bind = key;
-            cheat->binding = false;
-            return;
-        }
+  for (Cheat *cheat : cheats) {
+    if (cheat->binding) {
+      cheat->bind = key;
+      cheat->binding = false;
+      return;
     }
+  }
 
-    for (Cheat *cheat : cheats) {
-        if (cheat->bind == key) {
-            cheat->enabled = !cheat->enabled;
-        }
+  for (Cheat *cheat : cheats) {
+    if (cheat->bind == key) {
+      cheat->enabled = !cheat->enabled;
     }
+  }
 }
 
-JavaVM *Phantom::getJvm() {
-    return jvm;
-}
+JavaVM *Phantom::getJvm() { return jvm; }
 
-JNIEnv *Phantom::getEnv() {
-    return env;
-}
+JNIEnv *Phantom::getEnv() { return env; }
 
-void Phantom::setRunning(bool p_running) {
-    this->running = p_running;
-}
+void Phantom::setRunning(bool p_running) { this->running = p_running; }
 
-bool Phantom::isRunning() const {
-    return running;
-}
+bool Phantom::isRunning() const { return running; }

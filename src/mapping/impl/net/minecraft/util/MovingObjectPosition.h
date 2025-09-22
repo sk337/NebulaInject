@@ -4,19 +4,24 @@
 #include "../../../../AbstractClass.h"
 #include "Vec3.h"
 
+// forward declare to avoid recursive include
+class Entity;
+
 class MovingObjectPosition : public AbstractClass {
 public:
     jobject movingObjectPosition;
 
-MovingObjectPosition(Phantom *phantom, jobject movingObjectPosition);
-// previously: jobject getObject() const;
-jobject getRawObject() const;
-
+    MovingObjectPosition(Phantom *phantom, jobject movingObjectPosition);
+    jobject getRawObject() const;
+jobject getHitVec() const;
     bool isNull() const;
-bool isBlock() const;
-    // returns hitVec as a Vec3 wrapper
+    bool isBlock() const;
+    bool isEntity() const;
+    Entity getEntityHit() const;   // only needs forward declaration here
+
     Vec3 getHitVecContainer() const;
-jobject getMovingObjectPosition();
+    jobject getMovingObjectPosition();
+
 private:
     jfieldID fdHitVec;
     jobject obj;
