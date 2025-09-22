@@ -5,6 +5,11 @@ set -euo pipefail  # -u: undefined vars, -o pipefail: detect errors in pipes
 export JAVA_HOME=/usr/lib/jvm/java-8-openjdk
 export PATH=$JAVA_HOME/bin:$PATH
 
+# Add AWT/XAWT to runtime path so dlopen can find libawt_xawt.so
+
+export LD_LIBRARY_PATH="$JAVA_HOME/jre/lib/amd64/xawt:$JAVA_HOME/jre/lib/amd64:${LD_LIBRARY_PATH:-}"
+
+
 # Verify we're using the correct Java version
 echo "Using Java version:"
 $JAVA_HOME/bin/java -version
