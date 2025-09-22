@@ -5,6 +5,7 @@
 #ifndef PHANTOM_PHANTOM_H
 #define PHANTOM_PHANTOM_H
 
+#include <jni.h>
 #include <jvmti.h>
 #include <vector>
 
@@ -21,6 +22,10 @@ public:
     JNIEnv *getEnv();
     void setRunning(bool p_running);
     bool isRunning() const;
+
+    // Dump Minecraft JNI mappings to a header file
+    void dumpMCToHeader(jobject mcObj);
+
 private:
     std::vector<Cheat *> cheats{};
 
@@ -29,6 +34,4 @@ private:
     JNIEnv *env;
 };
 
-
-#endif//PHANTOM_PHANTOM_H
-
+#endif // PHANTOM_PHANTOM_H

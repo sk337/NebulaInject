@@ -18,7 +18,7 @@ AbstractClass::AbstractClass(Phantom *phantom, const char *clsName) {
     JvmUtils::checkJavaErrors(phantom);
 }
 
-jobject AbstractClass::getClassLoader() {
+jobject AbstractClass::getClassLoader() const {
     jclass launch = phantom->getEnv()->FindClass("net/minecraft/launchwrapper/Launch");
     jfieldID sfid = phantom->getEnv()->GetStaticFieldID(launch, "classLoader", "Lnet/minecraft/launchwrapper/LaunchClassLoader;");
     jobject classLoader = phantom->getEnv()->GetStaticObjectField(launch, sfid);
@@ -26,13 +26,13 @@ jobject AbstractClass::getClassLoader() {
     return classLoader;
 }
 
-jclass AbstractClass::getClass(const char *clsName) {
+jclass AbstractClass::getClass(const char *clsName) const {
     jstring name = phantom->getEnv()->NewStringUTF(clsName);
     jobject classLoader = getClassLoader();
     jmethodID mid = phantom->getEnv()->GetMethodID(phantom->getEnv()->GetObjectClass(classLoader), "findClass", "(Ljava/lang/String;)Ljava/lang/Class;");
     return (jclass)phantom->getEnv()->CallObjectMethod(classLoader, mid, name);
 }
 
-jclass AbstractClass::getClass() {
+jclass AbstractClass::getClass() const {
     return cls;
 }

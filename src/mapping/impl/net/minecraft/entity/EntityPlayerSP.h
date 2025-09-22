@@ -24,7 +24,7 @@ public:
 
     jfloat getRotationYaw();
     jfloat getRotationPitch();
-
+void swingItem();
 	jint getId();
 	const char *getName();
     const char *getFormattedDisplayName();

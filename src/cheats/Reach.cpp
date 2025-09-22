@@ -1,272 +1,275 @@
-//
-// Reach.cpp — robust AABB + fallback scan, safe debug (no ImGui in run)
-//
 #include "Reach.h"
-
+#include <net/minecraft/entity/EntityPlayerSP.h>
 #include <java/util/JavaList.h>
 #include <net/minecraft/client/multiplayer/WorldClient.h>
 #include <imgui.h>
-#include "../utils/ImGuiUtils.h"
-
-// Note: header (Reach.h) unchanged from the last version (it already declares new debug fields).
+#include <string>
+#include <fstream>
+#include <string>
+#include <fstream>
 Reach::Reach(Phantom *phantom) : Cheat("Reach", "Long arm hack") {
-    this->phantom = phantom;
-
-    enabled = true;
     reach = 3.2f;
-    minReach = 1.5f;
-    showDebug = false;
+    this->phantom = phantom;
+    currentTarget = nullptr;
+    currentDistance = 0.0;
+    isAttacking = false;
 
-    // debug state init
-    lastFound = false;
-    lastDistance = -1.0;
-    lastPointedEntity = false;
-
-    // new debug fields
-    lastNearbyCount = 0;
-    usedFallback = false;
+    // initialize debug state
+    lastEntityCount = 0;
+    lastHitVecWasNull = false;
+    lastVar9Fallback = false;
+    lastMopCtorFound = false;
+    lastAttackMethodFound = false;
+    lastAttackCalled = false;
+    lastFailureMsg.clear();
 }
+
+bool Reach::dumpedMethods = false;
 
 void Reach::renderSettings() {
-    ImGui::Checkbox("Enabled", &enabled);
-    ImGui::SameLine();
-    ImGui::TextDisabled("(toggle)");
+    // existing UI
+    ImGui::SliderFloat("Hit Distance", &reach, 3.0f, 6.0f, "%.2f");
 
-    ImGui::SliderFloat("Hit Distance", &reach, minReach, 6.0f, "%.2f");
-    ImGui::SameLine();
-    ImGuiUtils::drawHelper("Max distance used for entity hit detection.");
-
-    ImGui::Checkbox("Show debug info", &showDebug);
-    if (showDebug) {
-        ImGui::Separator();
-        ImGui::Text("Last found target: %s", lastFound ? "Yes" : "No");
-        ImGui::Text("Last pointed entity set: %s", lastPointedEntity ? "Yes" : "No");
-        if (lastFound) {
-            ImGui::Text("Last distance: %.3f", lastDistance);
-        }
-        ImGui::Text("Nearby query count: %d", lastNearbyCount);
-        ImGui::Text("Fallback used: %s", usedFallback ? "Yes" : "No");
+    if (currentTarget != nullptr) {
+        ImGui::Text("Targeted Entity: %p", reinterpret_cast<void*>(currentTarget));
+        ImGui::Text("Distance: %.2f", currentDistance);
+    } else {
+        ImGui::Text("No target");
     }
+
+    ImGui::Text("Attacking: %s", isAttacking ? "Yes" : "No");
+
+    // ===== Debug Block =====
+    ImGui::Separator();
+    ImGui::TextWrapped("Reach Debug Info (per tick):");
+
+    // Entity counts
+    ImGui::Text("Entities in last query: %d", lastEntityCount);
+
+    // MOP & hit vector checks
+    ImGui::Text("Last hitVec was null: %s", lastHitVecWasNull ? "Yes" : "No");
+    ImGui::Text("Var9 fallback used: %s", lastVar9Fallback ? "Yes" : "No");
+    ImGui::Text("Found MOP constructor: %s", lastMopCtorFound ? "Yes" : "No");
+    ImGui::Text("Found attackEntity method: %s", lastAttackMethodFound ? "Yes" : "No");
+    ImGui::Text("Called PlayerController.attackEntity: %s", lastAttackCalled ? "Yes" : "No");
+
+    // Target info
+    if (currentTarget) {
+        ImGui::Text("Current target ptr: %p", reinterpret_cast<void*>(currentTarget));
+        ImGui::Text("Current distance: %.2f", currentDistance);
+    }
+
+    if (!lastFailureMsg.empty()) {
+        ImGui::TextWrapped("Last failure: %s", lastFailureMsg.c_str());
+    }
+
+    ImGui::Separator();
 }
 
-/*
- Robust run:
-  - Build expanded AABB as before, extract raw jobject and call getEntitiesWithinAABBExcluding(...)
-  - If that returns zero elements, fallback to scanning the full entity list (mc->getWorldContainer().getEntities())
-  - In both cases, compute intercepts with AxisAlignedBB and choose the closest hit <= reach
-  - Update EntityRenderer and setObjectMouseOver accordingly
-  - No ImGui calls here (UI only in renderSettings)
-*/
+
 void Reach::run(Minecraft *mc) {
-    if (!enabled || !mc) return;
 
-    // reset debug state for this tick
-    lastFound = false;
-    lastDistance = -1.0;
-    lastPointedEntity = false;
-    lastNearbyCount = 0;
-    usedFallback = false;
 
-    // get the render view entity and ensure it's valid
+    // reset debug flags
+    lastEntityCount = 0;
+    lastHitVecWasNull = false;
+    lastVar9Fallback = false;
+    lastMopCtorFound = false;
+    lastAttackMethodFound = false;
+    lastAttackCalled = false;
+    lastFailureMsg.clear();
+
     Entity renderViewEntity = mc->getRenderViewEntityContainer();
-    if (renderViewEntity.getEntity() == nullptr) return;
+    EntityRenderer entityRenderer = mc->getEntityRendererContainer();
 
-    // partial ticks (defensive)
-    float partialTicks = 0.0f;
-    try {
-        partialTicks = mc->getTimerContainer().getPartialTicks();
-    } catch (...) {
-        partialTicks = 0.0f;
+    if (renderViewEntity.getEntity() == nullptr) {
+        lastFailureMsg = "No render view entity";
+        return;
     }
 
-    // compute eye pos and look vector
+    float partialTicks = mc->getTimerContainer().getPartialTicks();
+    double reachDistance = reach;
+    
+    // Get player's eye position and look vector
     Vec3 eyePos = renderViewEntity.getPositionEyesContainer(partialTicks);
     Vec3 lookVec = renderViewEntity.getLookContainer(partialTicks);
+    
+    // Calculate reach end point
+    Vec3 reachEnd = eyePos.addVectorContainer(
+        lookVec.getXCoord() * reachDistance,
+        lookVec.getYCoord() * reachDistance,
+        lookVec.getZCoord() * reachDistance
+    );
 
-    // ray end point using configured reach
-    double maxDist = static_cast<double>(reach);
-    Vec3 rayEnd = eyePos.addVectorContainer(lookVec.getXCoord() * maxDist,
-                                            lookVec.getYCoord() * maxDist,
-                                            lookVec.getZCoord() * maxDist);
-
-    // reset pointed entity
-    EntityRenderer entityRenderer = mc->getEntityRendererContainer();
-    entityRenderer.setPointedEntity(nullptr);
-
-    // Prepare AxisAlignedBB wrapper and extract raw jobject for the query
+    // Get entities in expanded bounding box
     AxisAlignedBB boundingBox = renderViewEntity.getEntityBoundingBoxContainer();
-    AxisAlignedBB afterAdd = boundingBox.getAddCoordContainer(lookVec.getXCoord() * maxDist,
-                                                              lookVec.getYCoord() * maxDist,
-                                                              lookVec.getZCoord() * maxDist);
-    AxisAlignedBB extendedBB = afterAdd.getExpandContainer(1.0, 1.0, 1.0);
+    JavaList entities = mc->getWorldContainer().getEntitiesWithinAABBExcluding(
+        renderViewEntity.getEntity(),
+        boundingBox.getAddCoordContainer(
+            lookVec.getXCoord() * reachDistance,
+            lookVec.getYCoord() * reachDistance,
+            lookVec.getZCoord() * reachDistance
+        ).expand(1.0f, 1.0f, 1.0f)
+    );
 
-    jobject aabbJObject = extendedBB.getAABB(); // raw jobject for world query
-    JavaList nearby(phantom, aabbJObject);
-    if (aabbJObject) {
-        nearby = mc->getWorldContainer().getEntitiesWithinAABBExcluding(renderViewEntity.getEntity(), aabbJObject);
-    } else {
-        // if we couldn't form an AABB jobject, fallback immediately
-        nearby = JavaList(phantom, nullptr);
-    }
+    lastEntityCount = entities.size();
+    currentTarget = nullptr;
+    currentDistance = reachDistance;
+    Vec3 bestHitVec(phantom, nullptr);
+    Entity bestTarget(phantom, nullptr);
 
-    // If the AABB query returned nothing (size==0), fall back to iterating entire world entity list
-    if (nearby.size() == 0) {
-        usedFallback = true;
-        JavaList allEntities = mc->getWorldContainer().getEntities();
-        lastNearbyCount = allEntities.size();
-        // We'll manually set nearbyCandidates by scanning allEntities and performing same tests below.
-        // To reuse the same loop, we'll iterate over allEntities directly.
-        double bestDistance = maxDist;
-        Vec3 bestHit(phantom, nullptr);
-        jobject bestEntityObj = nullptr;
-
-        for (int i = 0; i < allEntities.size(); ++i) {
-            jobject elem = allEntities.get(i);
-            if (!elem) continue;
-            // skip renderViewEntity itself
-            if (elem == renderViewEntity.getEntity()) continue;
-
-            Entity candidate(mc->getPhantom(), elem);
-            if (!candidate.canBeCollidedWith()) continue;
-
-            float collisionBorder = candidate.getCollisionBorderSize();
-            AxisAlignedBB candidateBB = candidate.getEntityBoundingBoxContainer().getExpandContainer(collisionBorder, collisionBorder, collisionBorder);
-            MovingObjectPosition mop = candidateBB.getCalculateInterceptContainer(eyePos.getVec3(), rayEnd.getVec3());
-
-            Vec3 candidateHit(phantom, nullptr);
-            if (mop.getMovingObjectPosition() != nullptr) {
-                candidateHit = mop.getHitVecContainer();
-            }
-
-            if (candidateBB.isVecInside(eyePos.getVec3())) {
-                // immediate hit
-                if (0.0 <= bestDistance) {
-                    entityRenderer.setPointedEntity(candidate.getEntity());
-                    bestHit = (mop.getMovingObjectPosition() == nullptr ? eyePos : candidateHit);
-                    bestDistance = 0.0;
-                    bestEntityObj = candidate.getEntity();
-                }
-                continue;
-            }
-
-            if (mop.getMovingObjectPosition() != nullptr) {
-                double dist = eyePos.distanceTo(candidateHit.getVec3());
-                if (dist <= maxDist && (dist < bestDistance || bestEntityObj == nullptr)) {
-                    Entity riding = renderViewEntity.getRidingEntityContainer();
-                    if (riding.getEntity() != nullptr && candidate.getId() == riding.getId()) {
-                        if (bestDistance == 0.0) {
-                            entityRenderer.setPointedEntity(candidate.getEntity());
-                            bestHit = candidateHit;
-                            bestEntityObj = candidate.getEntity();
-                        }
-                    } else {
-                        entityRenderer.setPointedEntity(candidate.getEntity());
-                        bestHit = candidateHit;
-                        bestDistance = dist;
-                        bestEntityObj = candidate.getEntity();
-                    }
-                }
-            }
-        }
-
-        // apply result (same as below)
-        if (bestEntityObj != nullptr && entityRenderer.getPointedEntityContainer().getEntity() != nullptr && bestDistance > 3.0) {
-            jclass MovingObjectPositionClass = mc->getClass("net.minecraft.util.MovingObjectPosition");
-            if (MovingObjectPositionClass != nullptr) {
-                jmethodID ctor = phantom->getEnv()->GetMethodID(MovingObjectPositionClass, "<init>", "(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/Vec3;)V");
-                if (ctor != nullptr) {
-                    jobject mopObj = phantom->getEnv()->NewObject(MovingObjectPositionClass, ctor, entityRenderer.getPointedEntity(), bestHit.getVec3());
-                    if (mopObj != nullptr) {
-                        mc->setObjectMouseOver(mopObj);
-                    }
-                }
-            }
-            lastFound = true;
-            lastDistance = bestDistance;
-            lastPointedEntity = true;
-        } else {
-            lastFound = false;
-            lastDistance = -1.0;
-            lastPointedEntity = (entityRenderer.getPointedEntityContainer().getEntity() != nullptr);
-        }
-
-        return; // done with fallback
-    }
-
-    // If we got here, the AABB query returned candidates (fast path)
-    usedFallback = false;
-    lastNearbyCount = nearby.size();
-
-    double bestDistance = maxDist;
-    Vec3 bestHit(phantom, nullptr);
-    jobject bestEntityObj = nullptr;
-
-    for (int i = 0; i < nearby.size(); ++i) {
-        jobject elem = nearby.get(i);
-        if (!elem) continue;
-        // skip render view entity if present
-        if (elem == renderViewEntity.getEntity()) continue;
-
-        Entity candidate(mc->getPhantom(), elem);
-        if (!candidate.canBeCollidedWith()) continue;
-
-        float collisionBorder = candidate.getCollisionBorderSize();
-        AxisAlignedBB candidateBB = candidate.getEntityBoundingBoxContainer().getExpandContainer(collisionBorder, collisionBorder, collisionBorder);
-        MovingObjectPosition mop = candidateBB.getCalculateInterceptContainer(eyePos.getVec3(), rayEnd.getVec3());
-
-        Vec3 candidateHit(phantom, nullptr);
-        if (mop.getMovingObjectPosition() != nullptr) {
-            candidateHit = mop.getHitVecContainer();
-        }
-
-        if (candidateBB.isVecInside(eyePos.getVec3())) {
-            if (0.0 <= bestDistance) {
-                entityRenderer.setPointedEntity(candidate.getEntity());
-                bestHit = (mop.getMovingObjectPosition() == nullptr ? eyePos : candidateHit);
-                bestDistance = 0.0;
-                bestEntityObj = candidate.getEntity();
-            }
+    // Find the closest entity that intersects with the reach line
+    for (int i = 0; i < entities.size(); i++) {
+        Entity entity(phantom, entities.get(i));
+        
+        // Check if entity is valid using getEntity() instead of isNull()
+        if (entity.getEntity() == nullptr || !entity.canBeCollidedWith()) {
             continue;
         }
 
-        if (mop.getMovingObjectPosition() != nullptr) {
-            double dist = eyePos.distanceTo(candidateHit.getVec3());
-            if (dist <= maxDist && (dist < bestDistance || bestEntityObj == nullptr)) {
-                Entity riding = renderViewEntity.getRidingEntityContainer();
-                if (riding.getEntity() != nullptr && candidate.getId() == riding.getId()) {
-                    if (bestDistance == 0.0) {
-                        entityRenderer.setPointedEntity(candidate.getEntity());
-                        bestHit = candidateHit;
-                        bestEntityObj = candidate.getEntity();
-                    }
-                } else {
-                    entityRenderer.setPointedEntity(candidate.getEntity());
-                    bestHit = candidateHit;
-                    bestDistance = dist;
-                    bestEntityObj = candidate.getEntity();
-                }
-            }
+        float collisionSize = entity.getCollisionBorderSize();
+        AxisAlignedBB expandedBB = entity.getEntityBoundingBoxContainer().getExpandContainer(
+            collisionSize, collisionSize, collisionSize
+        );
+
+        MovingObjectPosition mop = expandedBB.getCalculateInterceptContainer(eyePos.getVec3(), reachEnd.getVec3());
+        
+        // Check if MOP is valid using isNull() from your MovingObjectPosition class
+        if (mop.isNull()) {
+            continue;
+        }
+
+        Vec3 hitVec = mop.getHitVecContainer();
+        // Check if hitVec is valid using getVec3() instead of isNull()
+        if (hitVec.getVec3() == nullptr) {
+            lastHitVecWasNull = true;
+            continue;
+        }
+
+        double distance = eyePos.distanceTo(hitVec.getVec3());
+        
+        if (distance < currentDistance) {
+            currentDistance = distance;
+            bestTarget = entity;
+            bestHitVec = hitVec;
         }
     }
 
-    // apply result for fast path
-    if (bestEntityObj != nullptr && entityRenderer.getPointedEntityContainer().getEntity() != nullptr && bestDistance > 3.0) {
-        jclass MovingObjectPositionClass = mc->getClass("net/minecraft/util/MovingObjectPosition");
-        if (MovingObjectPositionClass != nullptr) {
-            jmethodID ctor = phantom->getEnv()->GetMethodID(MovingObjectPositionClass, "<init>", "(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/Vec3;)V");
-            if (ctor != nullptr) {
-                jobject mopObj = phantom->getEnv()->NewObject(MovingObjectPositionClass, ctor, entityRenderer.getPointedEntity(), bestHit.getVec3());
-                if (mopObj != nullptr) {
-                    mc->setObjectMouseOver(mopObj);
-                }
+    // Update current target for display
+    currentTarget = bestTarget.getEntity();
+
+    // Only create MOP if we have a valid target and hit vector
+    if (bestTarget.getEntity() != nullptr && bestHitVec.getVec3() != nullptr) {
+        jclass mopClass = phantom->getEnv()->FindClass("net/minecraft/util/MovingObjectPosition");
+        if (mopClass) {
+            jmethodID mopCtor = phantom->getEnv()->GetMethodID(
+                mopClass,
+                "<init>",
+                "(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/Vec3;)V"
+            );
+            
+            lastMopCtorFound = (mopCtor != nullptr);
+            
+            if (mopCtor) {
+                jobject newMop = phantom->getEnv()->NewObject(
+                    mopClass,
+                    mopCtor,
+                    bestTarget.getEntity(),
+                    bestHitVec.getVec3()
+                );
+                
+                // Set the object mouse over
+                mc->setObjectMouseOver(newMop);
+                
+                // Clean up local reference
+                phantom->getEnv()->DeleteLocalRef(newMop);
+            } else {
+                lastFailureMsg = "MovingObjectPosition constructor not found";
             }
+            
+            phantom->getEnv()->DeleteLocalRef(mopClass);
+        } else {
+            lastFailureMsg = "MovingObjectPosition class not found";
         }
-        lastFound = true;
-        lastDistance = bestDistance;
-        lastPointedEntity = true;
-    } else {
-        lastFound = false;
-        lastDistance = -1.0;
-        lastPointedEntity = (entityRenderer.getPointedEntityContainer().getEntity() != nullptr);
     }
+
+    // Check if we should attack (this would be set by some external input)
+    if (isAttacking && currentTarget != nullptr) {
+        performAttack(mc);
+        isAttacking = false; // Reset attack flag after performing
+    }
+}
+
+void Reach::performAttack(Minecraft *mc) {
+    if (currentTarget == nullptr) {
+        return;
+    }
+
+    jobject pc = nullptr;
+    jclass mcCls = phantom->getEnv()->GetObjectClass(mc->getMinecraft());
+    if (mcCls) {
+        jfieldID fdPlayerController = phantom->getEnv()->GetFieldID(
+            mcCls, 
+            "playerController", 
+            "Lnet/minecraft/client/multiplayer/PlayerControllerMP;"
+        );
+        if (fdPlayerController) {
+            pc = phantom->getEnv()->GetObjectField(mc->getMinecraft(), fdPlayerController);
+        }
+        phantom->getEnv()->DeleteLocalRef(mcCls);
+    }
+
+    if (pc) {
+        jclass pcCls = phantom->getEnv()->GetObjectClass(pc);
+        jmethodID midAttack = phantom->getEnv()->GetMethodID(
+            pcCls, 
+            "attackEntity", 
+            "(Lnet/minecraft/entity/EntityPlayer;Lnet/minecraft/entity/Entity;)V"
+        );
+        
+        if (midAttack == nullptr) {
+            midAttack = phantom->getEnv()->GetMethodID(
+                pcCls, 
+                "attackEntity", 
+                "(Lnet/minecraft/entity/Entity;Lnet/minecraft/entity/Entity;)V"
+            );
+        }
+
+        lastAttackMethodFound = (midAttack != nullptr);
+
+        if (midAttack) {
+            EntityPlayerSP player = mc->getPlayerContainer();
+            jobject playerRaw = player.getEntityPlayerSP();
+            
+            phantom->getEnv()->CallVoidMethod(
+                pc,
+                midAttack,
+                playerRaw,
+                currentTarget
+            );
+            
+            lastAttackCalled = true;
+        } else {
+            lastFailureMsg = "PlayerController.attackEntity method not found";
+        }
+        
+        phantom->getEnv()->DeleteLocalRef(pcCls);
+        phantom->getEnv()->DeleteLocalRef(pc);
+    }
+}
+
+void Reach::onAttack() {
+    // This method should be called from your input handler when attack key is pressed
+    isAttacking = true;
+}
+
+
+
+
+void Reach::reset(Minecraft *mc) {
+    // Reset state
+    currentTarget = nullptr;
+    currentDistance = 0.0;
+    isAttacking = false;
+    lastFailureMsg.clear();
 }

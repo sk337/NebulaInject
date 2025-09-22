@@ -3,16 +3,23 @@
 //
 
 #include "Phantom.h"
-
+#include <fstream>
 #include <net/minecraft/client/Minecraft.h>
 #include <net/minecraft/client/multiplayer/WorldClient.h>
 #include <net/minecraft/entity/EntityPlayerSP.h>
+#include <string>
 #include <thread>
 /* #include <net/minecraft/client/multiplayer/PlayerControllerMP.h> */
-
-#include "ui/PhantomWindow.h"
-
 #include "cheats/AutoClicker.h"
+#include "ui/PhantomWindow.h"
+#include <algorithm>
+#include <cctype>
+#include <filesystem>
+#include <functional>
+#include <iostream>
+#include <set>
+#include <sstream>
+#include <unordered_map>
 
 #include "cheats/AutoSprint.h"
 #include "cheats/Clip.h"
@@ -20,9 +27,9 @@
 #include "cheats/FastPlace.h"
 #include "cheats/NoHitDelay.h"
 #include "cheats/Reach.h"
+#include "cheats/ReachInput.h"
 #include "cheats/STap.h"
 #include "cheats/Velocity.h"
-
 #include "ui/KeyManager.h"
 
 Phantom::Phantom() {
@@ -48,7 +55,9 @@ Phantom::Phantom() {
   cheats.push_back(new NoHitDelay());
 
   cheats.push_back(new Velocity(this));
-  cheats.push_back(new Reach(this));
+  Reach *reachCheat = new Reach(this);
+  cheats.push_back(reachCheat);
+  cheats.push_back(new ReachInput(reachCheat));
   cheats.push_back(new FastPlace());
 
   cheats.push_back(new STap(this));
@@ -57,43 +66,33 @@ Phantom::Phantom() {
 void Phantom::runClient() {
   running = true;
 
-  // Get minecraft instance
-  auto *mc = new Minecraft(this);
 
+  auto *mc = new Minecraft(this);
   auto *window = new NebulaWindow(700, 500, "Phantom");
   window->setup();
-
   auto *keyManager = new KeyManager();
 
   while (running) {
-    // This is in the loop so that the instances are current. IE, joining a new
-    // world not trying to reference the old one.
     EntityPlayerSP player = mc->getPlayerContainer();
     WorldClient world = mc->getWorldContainer();
-    /* PlayerControllerMP playerController =
-     * mc->getPlayerControllerMPContainer(); */
-    // Ensure the player and world are not null (IE, check if in-game)
-    if (player.getEntityPlayerSP() == nullptr || world.getWorld() == nullptr) {
+    if (!player.getEntityPlayerSP() || !world.getWorld()) {
       window->update(cheats, running, false);
+
       continue;
     }
 
-    // I don't know exactly how much time this takes, but I think calling it in
-    // a different thread upped my FPS
     std::thread(callUpdateKeys, keyManager, this).detach();
     for (Cheat *cheat : cheats) {
       if (cheat->enabled)
         cheat->run(mc);
-      else if (!cheat->enabled)
+      else
         cheat->reset(mc);
     }
-
     window->update(cheats, running, true);
   }
 
   window->destruct();
   jvm->DetachCurrentThread();
-
   delete mc;
   delete window;
   delete keyManager;

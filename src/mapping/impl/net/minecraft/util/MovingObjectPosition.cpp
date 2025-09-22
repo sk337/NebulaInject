@@ -1,40 +1,44 @@
-#include "MovingObjectPosition.h"
+//
+// Created by somepineaple on 2/6/22.
+//
 
-MovingObjectPosition::MovingObjectPosition(Phantom *phantom, jobject mop)
-    : AbstractClass(phantom, "MovingObjectPosition") {
-    // mapping earlier defined field "hitVec"
+#include "MovingObjectPosition.h"
+#include "../entity/Entity.h"
+MovingObjectPosition::MovingObjectPosition(Phantom *phantom, jobject movingObjectPosition) : AbstractClass(phantom, "MovingObjectPosition") {
     fdHitVec = getFieldID("hitVec");
-    this->obj = mop;
+
+    this->movingObjectPosition = movingObjectPosition;
 }
 
-
-jobject MovingObjectPosition::getRawObject() const {
-    return obj;
+jobject MovingObjectPosition::getHitVec() const {
+    return getObject(movingObjectPosition, fdHitVec);
 }
 
 Vec3 MovingObjectPosition::getHitVecContainer() const {
-    if (!obj) return Vec3(phantom, nullptr);
-    jobject v = getObject(obj, fdHitVec); // now unambiguous because no zero-arg getObject in this class
-    return Vec3(phantom, v);
-}
-
-
-bool MovingObjectPosition::isNull() const {
-    return obj == nullptr;
-}
-bool MovingObjectPosition::isBlock() const {
-    if (!obj) return false;
-    jclass cls = phantom->getEnv()->GetObjectClass(obj);
-    jfieldID typeField = phantom->getEnv()->GetFieldID(cls, "typeOfHit", "Lnet/minecraft/util/MovingObjectPosition$MovingObjectType;");
-    jobject typeObj = phantom->getEnv()->GetObjectField(obj, typeField);
-    
-    jclass typeCls = phantom->getEnv()->GetObjectClass(typeObj);
-    jfieldID blockEnum = phantom->getEnv()->GetStaticFieldID(typeCls, "BLOCK", "Lnet/minecraft/util/MovingObjectPosition$MovingObjectType;");
-    jobject blockVal = phantom->getEnv()->GetStaticObjectField(typeCls, blockEnum);
-
-    return phantom->getEnv()->IsSameObject(typeObj, blockVal);
+    return Vec3(phantom, getHitVec());
 }
 
 jobject MovingObjectPosition::getMovingObjectPosition() {
     return movingObjectPosition;
+}
+
+
+bool MovingObjectPosition::isNull() const {
+    // return true if the underlying jobject is null
+    return movingObjectPosition == nullptr;
+}
+
+bool MovingObjectPosition::isBlock() const {
+    // implement using JNI: check the type of the MOP
+    return false; // placeholder
+}
+
+bool MovingObjectPosition::isEntity() const {
+    // implement using JNI: check if MOP hit an entity
+    return true; // placeholder
+}
+
+Entity MovingObjectPosition::getEntityHit() const {
+    // return the hit entity if there is one
+    return Entity(phantom, nullptr); // placeholder
 }
