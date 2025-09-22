@@ -1,3 +1,8 @@
+
+cmake_minimum_required(VERSION 3.18)
+project(phantom LANGUAGES C CXX)
+
+
 set(IMGUI_SOURCE_FILES
     vendor/imgui/imgui.cpp
     vendor/imgui/imgui_impl_opengl3.cpp
@@ -11,6 +16,16 @@ set(IMGUI_SOURCE_FILES
 # --- Define target FIRST ---
 add_library(phantom SHARED ${PHANTOM_SOURCE_FILES} ${IMGUI_SOURCE_FILES})
 
+# --- Add include dirs (don’t force /SDL2 manually) ---
+target_include_directories(phantom PRIVATE
+    ${JNI_INCLUDE_DIRS}
+    ${SDL2_INCLUDE_DIRS}   # ✅ just this is enough
+    ${OPENGL_INCLUDE_DIR}
+    ${X11_INCLUDE_DIR}
+    ${IMGUI_INCLUDE_DIR}
+    src/mapping/impl
+)
+
 # --- Then link against its deps ---
 target_link_libraries(phantom
     ${JNI_LIBRARIES}
@@ -18,6 +33,7 @@ target_link_libraries(phantom
     ${JAWT_LIBRARY}
     ${CMAKE_THREAD_LIBS_INIT}
     ${CMAKE_DL_LIBS}
+    ${SDL2_LIBRARIES}      # ✅ make sure SDL2 is linked
     ${X11_LIBRARIES}
 )
 
