@@ -8,13 +8,13 @@
 #include <jni.h>
 #include <jvmti.h>
 #include <vector>
-
+#include "mapping/Mapping.h"
 class Cheat;
 
 class Phantom {
 public:
     Phantom();
-
+GameVersions DetectGameVersion(); // Add this
     void runClient();
     void onKey(int key);
 

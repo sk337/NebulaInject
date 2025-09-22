@@ -5,6 +5,30 @@
 
 static std::unordered_map<std::string_view, std::string_view> g_Mappings;
 
+std::map<std::string, std::shared_ptr<CM>> lookup;
+std::mutex lookup_mutex;
+CM* Mapping::getClass(const char* key) {
+    if (!key) {
+        std::cerr << "[Mapping ERROR] Null key provided to getClass" << std::endl;
+        return nullptr;
+    }
+    
+    std::lock_guard<std::mutex> lock(lookup_mutex);
+    std::string k(key);
+    
+    // Use safe find instead of at()
+    auto it = lookup.find(k);
+    if (it == lookup.end()) {
+        std::cerr << "[Mapping ERROR] Class not found in lookup: " << k << std::endl;
+        return nullptr;
+    }
+    return it->second.get(); // Return raw pointer from shared_ptr
+}
+
+const char* Mapping::getClassName(const char* key) {
+    CM* cm = getClass(key);
+    return cm ? cm->name : nullptr;
+}
 void Mapping::Initialize(const GameVersions version)
 {
     // Clear any previous mappings
