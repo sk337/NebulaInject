@@ -1,15 +1,12 @@
-
 //
-// ReachInput.h
+// ReachInput.h — simple hold-to-attack for Reach
 //
-
 #ifndef PHANTOM_REACHINPUT_H
 #define PHANTOM_REACHINPUT_H
 
-#include "Cheat.h"
-#include <thread>
-#include <atomic>
 #include <X11/Xlib.h>
+#include "Cheat.h"
+#include "../Phantom.h"
 
 class Reach;
 
@@ -23,13 +20,7 @@ public:
 
 private:
     Reach *reach;
-    std::atomic<bool> keyPressed;
-    std::atomic<bool> inputThreadRunning;
-    std::thread inputThread;
-
-    Display *xDisplay;
-
-    void inputLoop();
+    Display *xDisplay = nullptr;
 };
 
 #endif // PHANTOM_REACHINPUT_H
